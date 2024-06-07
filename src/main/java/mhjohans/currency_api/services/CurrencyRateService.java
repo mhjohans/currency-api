@@ -13,14 +13,17 @@ class CurrencyRateService {
     
     @Value("${currency_rate.base_url}")
     private String baseUrl;
+   
     @Value("${currency_rate.api_key}")
     private String apiKey;
+   
     @Autowired
     private RestClient.Builder restClientBuilder;
+    
     private RestClient restClient;
     
-    double getCurrencyRate(final String from, final String to) {
-        return restClient.get().uri("/{from}/{to}", from, to).retrieve().body(CurrencyRate.class).quote();
+    double getCurrencyRate(String fromCurrencyCode, String toCurrencyCode) {
+        return restClient.get().uri("/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRate.class).quote();
     }
 
     @PostConstruct

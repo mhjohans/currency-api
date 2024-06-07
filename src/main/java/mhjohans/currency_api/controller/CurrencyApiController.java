@@ -19,10 +19,10 @@ public class CurrencyApiController {
      * @param  from    the currency to convert from
      * @param  to      the currency to convert to
      * @param  amount  the amount to convert
-     * @return         the converted amount as a double
+     * @return         the converted amount as a string
      */
     @GetMapping("/convert")
-    public double convertCurrency(@RequestParam final String from, @RequestParam final String to, @RequestParam final double amount) {
+    public String convertCurrency(@RequestParam String from, @RequestParam String to, @RequestParam double amount) {
         return currencyApiService.convertCurrency(from, to, amount);
     }
 
