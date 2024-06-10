@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: currency-api
+
+# Currency rates API parameters
+currency_rates_api:
+  key: ${SWOP_API_KEY}
+  base_url: https://swop.cx/rest
+  # Cache expiry parameters
+  supported_currencies_ttl: P1D
+  currency_rates_ttl: PT1M

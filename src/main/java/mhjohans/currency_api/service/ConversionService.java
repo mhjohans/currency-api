@@ -7,40 +7,27 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-
-import mhjohans.currency_api.dtos.CurrencyDTO;
-import mhjohans.currency_api.dtos.CurrencyRateDTO;
 
 @Service
 public class ConversionService {
 
     @Autowired
-    private RestClient currencyRateApiClient;
+    private CurrencyRateService currencyRateService;
 
     public String convertCurrency(String fromCurrencyCode, String toCurrencyCode, double amount) {
         validateCurrency(fromCurrencyCode);
         validateCurrency(toCurrencyCode);
-        double convertedAmount = getCurrencyRate(fromCurrencyCode, toCurrencyCode) * amount;
+        double convertedAmount = currencyRateService.getCurrencyRate(fromCurrencyCode, toCurrencyCode) * amount;
         return formatCurrencyAmount(convertedAmount, toCurrencyCode);
     }
     
     private void validateCurrency(String currencyCode) {
         Objects.requireNonNull(currencyCode, "Currency code cannot be null");
-        List<String> supportedCurrencies = getSupportedCurrencies();
+        List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
         if (!supportedCurrencies.contains(currencyCode)) {
             throw new IllegalArgumentException("Currency code not supported: " + currencyCode);
         }
-    }
-    
-    private List<String> getSupportedCurrencies() {
-        return currencyRateApiClient.get().uri("/currencies").retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {}).stream().map(CurrencyDTO::code).toList();
-    }
-    
-    private double getCurrencyRate(String fromCurrencyCode, String toCurrencyCode) {
-        return currencyRateApiClient.get().uri("/rates/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRateDTO.class).quote();
     }
 
     private String formatCurrencyAmount(double amount, String currencyCode) {

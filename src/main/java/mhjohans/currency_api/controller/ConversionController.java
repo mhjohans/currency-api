@@ -25,6 +25,7 @@ public class ConversionController {
      */
     @GetMapping("/convert")
     public String convertCurrency(@RequestParam String from, @RequestParam String to, @RequestParam double amount) {
+        // TODO: Add mapping of errors to HTTP status codes
         return currencyApiService.convertCurrency(from, to, amount);
     }
 
