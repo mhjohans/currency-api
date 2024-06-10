@@ -2,23 +2,25 @@ package mhjohans.currency_api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import mhjohans.currency_api.service.CurrencyApiService;
+import mhjohans.currency_api.service.ConversionService;
 
 @RestController
-public class CurrencyApiController {
+@RequestMapping("/${spring.application.name}")
+public class ConversionController {
 
     @Autowired
-    private CurrencyApiService currencyApiService;
+    private ConversionService currencyApiService;
 
     /**
      * Converts the given amount from one currency to another.
      *
-     * @param  from    the currency to convert from
-     * @param  to      the currency to convert to
-     * @param  amount  the amount to convert
+     * @param  from    the currency code to convert from as a string
+     * @param  to      the currency code to convert to as a string
+     * @param  amount  the amount to convert as a double
      * @return         the converted amount as a string
      */
     @GetMapping("/convert")
