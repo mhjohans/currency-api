@@ -9,6 +9,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
+// TODO: Add logging
 public class ConversionService {
 
     @Autowired
@@ -30,7 +31,7 @@ public class ConversionService {
         String cleanedCurrencyCode = currencyCode.trim().toUpperCase();
         // Check if the currency code has correct length
         if (cleanedCurrencyCode.length() != 3) {
-            throw new IllegalArgumentException("Invalid currency code: " + currencyCode);
+            throw new IllegalArgumentException("Invalid currency code: " + (currencyCode.isEmpty() ? "string cannot be empty" : currencyCode));
         }
         // Check if the currency code is not on the list of supported currencies
         List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();

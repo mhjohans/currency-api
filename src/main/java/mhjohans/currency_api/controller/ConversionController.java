@@ -13,6 +13,7 @@ import mhjohans.currency_api.service.ConversionService;
 
 @RestController
 @RequestMapping("/${spring.application.name}")
+// TODO: Add logging
 public class ConversionController {
 
     @Autowired
@@ -33,7 +34,7 @@ public class ConversionController {
         try {
             return currencyApiService.convertCurrency(from, to, amount);
         } catch (IllegalArgumentException e) {
-            // Received an invalid request
+            // Received invalid request parameters
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (RestClientException e) {
             // Could not get a response from the currency rate API

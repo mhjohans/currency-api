@@ -4,30 +4,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.client.RestClient;
-
-import mhjohans.currency_api.dtos.CurrencyDTO;
-import mhjohans.currency_api.dtos.CurrencyRateDTO;
 
 public class ConversionServiceTest {
 
     @InjectMocks
     private ConversionService conversionService;
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private RestClient currencyRateApiClient;
+    @Mock
+    private CurrencyRateService currencyRateService;
 
     @BeforeEach
     public void setUp() {
@@ -35,14 +28,11 @@ public class ConversionServiceTest {
         LocaleContextHolder.setLocale(Locale.US);
         // Initialize the mock objects
         MockitoAnnotations.openMocks(this);
-         // Mock the supported currencies to include USD and EUR
-         List<CurrencyDTO> supportedCurrencies = List.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true), new CurrencyDTO("EUR", "12345", 2, "Euro", true));
-         when(currencyRateApiClient.get().uri("/currencies").retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {}))
-             .thenReturn(supportedCurrencies);
-         // Mock the currency rate from USD to EUR
-         CurrencyRateDTO currencyRateDTO = new CurrencyRateDTO("USD", "EUR", 0.85, LocalDate.now());
-         when(currencyRateApiClient.get().uri("/rates/{from}/{to}", "USD", "EUR").retrieve().body(CurrencyRateDTO.class))
-             .thenReturn(currencyRateDTO);
+        // Mock the supported currencies to include USD and EUR
+        List<String> supportedCurrencies = List.of("USD", "EUR");
+        when(currencyRateService.getSupportedCurrencies()).thenReturn(supportedCurrencies);
+        // Mock the currency rate from USD to EUR
+        when(currencyRateService.getCurrencyRate("USD", "EUR")).thenReturn(0.85);
     }
 
     @Test
@@ -71,14 +61,23 @@ public class ConversionServiceTest {
         String result = conversionService.convertCurrency("USD", "EUR", -100);
         assertEquals("-€85.00", result);
     }
+
     @Test
     public void testConvertCurrencyWithNullCurrency() {
         // Expect an exception for null currency
-        NullPointerException exception = assertThrows(NullPointerException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             conversionService.convertCurrency(null, "EUR", 100);
         });
         // Verify the exception message
         assertEquals("Currency code cannot be null", exception.getMessage());
+    }
+
+    @Test
+    public void testConvertCurrencyWithEmptyCurrency() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            conversionService.convertCurrency("", "EUR", 100);
+        });
+        assertEquals("Invalid currency code: string cannot be empty", exception.getMessage());
     }
 
     @Test
