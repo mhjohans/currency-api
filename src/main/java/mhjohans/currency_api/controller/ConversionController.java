@@ -1,15 +1,18 @@
 package mhjohans.currency_api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.constraints.NotBlank;
 import mhjohans.currency_api.service.ConversionService;
 
 @RestController
 @RequestMapping("/${spring.application.name}")
+@Validated
 public class ConversionController {
 
     @Autowired
@@ -24,9 +27,14 @@ public class ConversionController {
      * @return         the converted amount as a string
      */
     @GetMapping("/convert")
-    public String convertCurrency(@RequestParam String from, @RequestParam String to, @RequestParam double amount) {
+    public String convertCurrency(
+            @RequestParam @NotBlank(message = "The 'from' currency code must not be null or empty") String from,
+            @RequestParam @NotBlank(message = "The 'to' currency code must not be null or empty") String to,
+            @RequestParam double amount) {
+        // TODO: Add authentication
+        // TODO: Add CSRF and CSP for security
         // TODO: Add mapping of errors to HTTP status codes
-        return currencyApiService.convertCurrency(from, to, amount);
+        return currencyApiService.convertCurrency(from.trim(), to.trim(), amount);
     }
 
 }

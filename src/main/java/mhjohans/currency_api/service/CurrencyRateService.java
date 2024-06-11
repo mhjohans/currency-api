@@ -1,6 +1,7 @@
 package mhjohans.currency_api.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,16 +23,23 @@ public class CurrencyRateService {
     @Autowired
     private RestClient currencyRateApiClient;
 
-    @Cacheable(value = "supportedCurrencies")
+    @Cacheable("supportedCurrencies")
     public List<String> getSupportedCurrencies() {
-        logger.trace("Getting supported currencies from API");
-        return currencyRateApiClient.get().uri("/currencies").retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {}).stream().map(CurrencyDTO::code).toList();
+        // TODO: Add resilience
+        logger.debug("Getting supported currencies from API");
+        List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies").retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
+        logger.trace("Got supported currencies from API: {}", supportedCurrencies);
+        Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
+        return supportedCurrencies.stream().map(CurrencyDTO::code).toList();
     }
 
-    @Cacheable(value = "currencyRates")
+    @Cacheable("currencyRates")
     public double getCurrencyRate(String fromCurrencyCode, String toCurrencyCode) {
-        logger.trace("Getting currency rate from API for {} to {}", fromCurrencyCode, toCurrencyCode);
-        return currencyRateApiClient.get().uri("/rates/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRateDTO.class).quote();
+        logger.debug("Getting currency rate from API for {} to {}", fromCurrencyCode, toCurrencyCode);
+        CurrencyRateDTO currencyRate = currencyRateApiClient.get().uri("/rates/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRateDTO.class);
+        logger.trace("Got currency rate from API for {} to {} with value {}: {}", fromCurrencyCode, toCurrencyCode, currencyRate, currencyRate);
+        Objects.requireNonNull(currencyRate, "Currency rate cannot be null");
+        return currencyRate.quote();
     }
  
     /**

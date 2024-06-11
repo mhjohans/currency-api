@@ -33,6 +33,7 @@ public class ConversionServiceTest {
     public void setUp() {
         // Set the locale for formatting
         LocaleContextHolder.setLocale(Locale.US);
+        // Initialize the mock objects
         MockitoAnnotations.openMocks(this);
          // Mock the supported currencies to include USD and EUR
          List<CurrencyDTO> supportedCurrencies = List.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true), new CurrencyDTO("EUR", "12345", 2, "Euro", true));
