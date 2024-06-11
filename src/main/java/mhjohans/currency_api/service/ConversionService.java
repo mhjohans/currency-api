@@ -15,20 +15,26 @@ public class ConversionService {
     private CurrencyRateService currencyRateService;
 
     public String convertCurrency(String fromCurrencyCode, String toCurrencyCode, double amount) {
-        validateCurrency(fromCurrencyCode);
-        validateCurrency(toCurrencyCode);
+        validateCurrencyCode(fromCurrencyCode);
+        validateCurrencyCode(toCurrencyCode);
         double convertedAmount = currencyRateService.getCurrencyRate(fromCurrencyCode, toCurrencyCode) * amount;
         return formatCurrencyAmount(convertedAmount, toCurrencyCode);
     }
     
-    private void validateCurrency(String currencyCode) {
-        // Check if the currency code is null or blank or not 3 characters long
-        if (currencyCode == null || currencyCode.isBlank() || currencyCode.length() != 3) {
+    private void validateCurrencyCode(String currencyCode) {
+        // Check if the currency code is null
+        if (currencyCode == null) {
+            throw new IllegalArgumentException("Currency code cannot be null");
+        }
+        // Clean up the received currency code of whitespace and convert to uppercase
+        String cleanedCurrencyCode = currencyCode.trim().toUpperCase();
+        // Check if the currency code has correct length
+        if (cleanedCurrencyCode.length() != 3) {
             throw new IllegalArgumentException("Invalid currency code: " + currencyCode);
         }
         // Check if the currency code is not on the list of supported currencies
         List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
-        if (!supportedCurrencies.contains(currencyCode)) {
+        if (!supportedCurrencies.contains(cleanedCurrencyCode)) {
             throw new IllegalArgumentException("Currency code not supported: " + currencyCode);
         }
     }
