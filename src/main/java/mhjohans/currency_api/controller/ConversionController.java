@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.constraints.NotBlank;
 import mhjohans.currency_api.service.ConversionService;
 
 @RestController
@@ -27,10 +26,7 @@ public class ConversionController {
      * @return         the converted amount as a string
      */
     @GetMapping("/convert")
-    public String convertCurrency(
-            @RequestParam @NotBlank(message = "The 'from' currency code must not be null or empty") String from,
-            @RequestParam @NotBlank(message = "The 'to' currency code must not be null or empty") String to,
-            @RequestParam double amount) {
+    public String convertCurrency(@RequestParam String from, @RequestParam String to, @RequestParam double amount) {
         // TODO: Add authentication
         // TODO: Add CSRF and CSP for security
         // TODO: Add mapping of errors to HTTP status codes

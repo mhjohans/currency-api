@@ -3,7 +3,6 @@ package mhjohans.currency_api.service;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -23,7 +22,11 @@ public class ConversionService {
     }
     
     private void validateCurrency(String currencyCode) {
-        Objects.requireNonNull(currencyCode, "Currency code cannot be null");
+        // Check if the currency code is null or blank or not 3 characters long
+        if (currencyCode == null || currencyCode.isBlank() || currencyCode.length() != 3) {
+            throw new IllegalArgumentException("Invalid currency code: " + currencyCode);
+        }
+        // Check if the currency code is not on the list of supported currencies
         List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
         if (!supportedCurrencies.contains(currencyCode)) {
             throw new IllegalArgumentException("Currency code not supported: " + currencyCode);
