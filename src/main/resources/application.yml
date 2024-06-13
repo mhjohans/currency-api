@@ -3,9 +3,13 @@ spring:
     name: currency-api
 
 # Currency rates API parameters
+# TODO: Define this as a ConfigurationProperties object
 currency_rates_api:
   key: ${SWOP_API_KEY}
   base_url: https://swop.cx/rest
   # Cache expiry parameters
-  supported_currencies_ttl: P1D
-  currency_rates_ttl: PT1M
+  supported_currencies:
+    cache_ttl: P1D # 1 day
+    fallback:  USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY
+  currency_rates:
+    cache_ttl: PT1M # 1 minute

@@ -6,16 +6,20 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import mhjohans.currency_api.dtos.CurrencyDTO;
 import mhjohans.currency_api.dtos.CurrencyRateDTO;
 
 @Service
+@CircuitBreaker(name = "currencyRateServiceCircuitBreaker")
 public class CurrencyRateService {
 
     private static final Logger logger = LoggerFactory.getLogger(CurrencyRateService.class);
@@ -23,9 +27,13 @@ public class CurrencyRateService {
     @Autowired
     private RestClient currencyRateApiClient;
 
+    @Value("${currency_rates_api.supported_currencies.fallback}")
+    private List<String> fallbackSupportedCurrencies;
+
     @Cacheable("supportedCurrencies")
+    // TODO: Having fallback values means that the values won't be updated until the cache expires even if the API starts working.
+    @Retry(name = "supportedCurrenciesRetry", fallbackMethod = "getSupportedCurrenciesFallback")
     public List<String> getSupportedCurrencies() {
-        // TODO: Add resilience
         logger.debug("Getting supported currencies from API");
         List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies").retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
         logger.trace("Got supported currencies from API: {}", supportedCurrencies);
@@ -33,7 +41,8 @@ public class CurrencyRateService {
         return supportedCurrencies.stream().map(CurrencyDTO::code).toList();
     }
 
-    @Cacheable("currencyRates")
+    @Cacheable(value = "currencyRates", sync = true)
+    @Retry(name = "currencyRateRetry")
     public double getCurrencyRate(String fromCurrencyCode, String toCurrencyCode) {
         logger.debug("Getting currency rate from API for {} to {}", fromCurrencyCode, toCurrencyCode);
         CurrencyRateDTO currencyRate = currencyRateApiClient.get().uri("/rates/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRateDTO.class);
@@ -43,19 +52,25 @@ public class CurrencyRateService {
     }
  
     /**
-     * Empties the cache for supported currencies on a scheduled interval defined in the application property "currency_rates_api.supported_currencies_ttl".
+     * Empties the cache for supported currencies on a scheduled interval defined in the application properties file.
      */
-    @Scheduled(fixedRateString = "${currency_rates_api.supported_currencies_ttl}")
+    @Scheduled(fixedRateString = "${currency_rates_api.supported_currencies.cache_ttl}")
     void evictSupportedCurrenciesCache() {
         logger.debug("Evicting supported currencies cache");
     }
 
     /**
-     * Empties the cache for currency rates on a scheduled interval defined in the application property "currency_rates_api.currency_rates_ttl".
+     * Empties the cache for currency rates on a scheduled interval defined in the application properties file.
      */
-    @Scheduled(fixedRateString = "${currency_rates_api.currency_rates_ttl}")
+    @Scheduled(fixedRateString = "${currency_rates_api.currency_rates.cache_ttl}")
     void evictCurrencyRatesCache() {
         logger.debug("Evicting currency rates cache");
+    }
+
+    @SuppressWarnings("unused")
+    private List<String> getSupportedCurrenciesFallback(Exception e) {
+        logger.warn("Could not retrieve supported currencies, using fallback values: {}", fallbackSupportedCurrencies, e);
+        return fallbackSupportedCurrencies;
     }
 
 }

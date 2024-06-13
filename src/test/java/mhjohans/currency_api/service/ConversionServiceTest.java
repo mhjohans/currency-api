@@ -16,14 +16,14 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 public class ConversionServiceTest {
 
+    @Mock
+    private CurrencyRateService currencyRateService;
+    
     @InjectMocks
     private ConversionService conversionService;
 
-    @Mock
-    private CurrencyRateService currencyRateService;
-
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // Set the locale for formatting
         LocaleContextHolder.setLocale(Locale.US);
         // Initialize the mock objects
@@ -36,7 +36,7 @@ public class ConversionServiceTest {
     }
 
     @Test
-    public void testConvertCurrency() {
+    void testConvertCurrency() {
         // Perform the conversion
         String result = conversionService.convertCurrency("USD", "EUR", 100);
         // Verify the format of the conversion result
@@ -44,26 +44,26 @@ public class ConversionServiceTest {
     }
     
     @Test
-    public void testConvertCurrencyWithFinnishLocale() {
+    void testConvertCurrencyWithFinnishLocale() {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("fi"));
         String result = conversionService.convertCurrency("USD", "EUR", 100);
         assertEquals("85,00 €", result);
     }
 
     @Test
-    public void testConvertCurrencyWithZeroAmount() {
+    void testConvertCurrencyWithZeroAmount() {
         String result = conversionService.convertCurrency("USD", "EUR", 0);
         assertEquals("€0.00", result);
     }
 
     @Test
-    public void testConvertCurrencyWithNegativeAmount() {
+    void testConvertCurrencyWithNegativeAmount() {
         String result = conversionService.convertCurrency("USD", "EUR", -100);
         assertEquals("-€85.00", result);
     }
 
     @Test
-    public void testConvertCurrencyWithNullCurrency() {
+    void testConvertCurrencyWithNullCurrency() {
         // Expect an exception for null currency
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             conversionService.convertCurrency(null, "EUR", 100);
@@ -73,7 +73,7 @@ public class ConversionServiceTest {
     }
 
     @Test
-    public void testConvertCurrencyWithEmptyCurrency() {
+    void testConvertCurrencyWithEmptyCurrency() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             conversionService.convertCurrency("", "EUR", 100);
         });
@@ -81,7 +81,7 @@ public class ConversionServiceTest {
     }
 
     @Test
-    public void testConvertCurrencyWithUnsupportedCurrency() {
+    void testConvertCurrencyWithUnsupportedCurrency() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             conversionService.convertCurrency("USD", "GBP", 100);
         });

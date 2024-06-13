@@ -37,8 +37,8 @@ public class ConversionController {
             // Received invalid request parameters
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (RestClientException e) {
-            // Could not get a response from the currency rate API
-            throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, e.getMessage(), e);
+            // Could not get a valid response from the external currency rate API
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 

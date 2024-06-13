@@ -68,7 +68,7 @@ public class ConversionControllerTest {
     void testConvertWithUnavailableExternalApi() throws Exception {
         when(currencyRateService.getCurrencyRate("USD", "EUR")).thenThrow(new RestClientException("N/A"));
         mockMvc.perform(MockMvcRequestBuilders.get("/currency-api/convert?from=USD&to=EUR&amount=100"))
-                .andExpect(status().isGatewayTimeout());
+                .andExpect(status().isInternalServerError());
     }
 
 }

@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+	<!-- TODO: Clean the unneeded dependencies -->
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -29,6 +30,11 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot2</artifactId>
+			<version>2.2.0</version>
 		</dependency>
 		<!-- 
 		<dependency>
