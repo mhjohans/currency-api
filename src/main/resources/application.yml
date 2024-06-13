@@ -1,6 +1,10 @@
 spring:
   application:
     name: currency-api
+logging:
+  level:
+    mhjohans.currency_api.service: DEBUG
+
 
 # Currency rates API parameters
 # TODO: Define this as a ConfigurationProperties object

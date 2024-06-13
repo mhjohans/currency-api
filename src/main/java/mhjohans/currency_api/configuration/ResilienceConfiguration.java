@@ -12,20 +12,20 @@ import io.github.resilience4j.common.retry.configuration.RetryConfigCustomizer;
 public class ResilienceConfiguration {
 
     @Bean
-    public CircuitBreakerConfigCustomizer circuitBreakerConfigCustomizer() {
+    CircuitBreakerConfigCustomizer circuitBreakerConfigCustomizer() {
         return CircuitBreakerConfigCustomizer.of("currencyRateServiceCircuitBreaker", builder -> builder.failureRateThreshold(60)
-        .slidingWindowSize(5)
-        .waitDurationInOpenState(Duration.ofSeconds(30))
-        .permittedNumberOfCallsInHalfOpenState(2));
+            .slidingWindowSize(5)
+            .waitDurationInOpenState(Duration.ofSeconds(30))
+            .permittedNumberOfCallsInHalfOpenState(2));
     }
     
     @Bean
-    public RetryConfigCustomizer supportedCurrenciesRetryConfigCustomizer() {
+    RetryConfigCustomizer supportedCurrenciesRetryConfigCustomizer() {
         return RetryConfigCustomizer.of("supportedCurrenciesRetry", builder -> builder.maxAttempts(5).waitDuration(Duration.ofMillis(500)));
     }
 
     @Bean
-    public RetryConfigCustomizer currencyRateRetryConfigCustomizer() {
+    RetryConfigCustomizer currencyRateRetryConfigCustomizer() {
         return RetryConfigCustomizer.of("currencyRateRetry", builder -> builder.maxAttempts(3).waitDuration(Duration.ofMillis(300)));
     }
 

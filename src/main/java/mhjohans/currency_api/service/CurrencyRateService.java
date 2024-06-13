@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -55,16 +56,18 @@ public class CurrencyRateService {
      * Empties the cache for supported currencies on a scheduled interval defined in the application properties file.
      */
     @Scheduled(fixedRateString = "${currency_rates_api.supported_currencies.cache_ttl}")
+    @CacheEvict(value = "supportedCurrencies", allEntries = true)
     void evictSupportedCurrenciesCache() {
-        logger.debug("Evicting supported currencies cache");
+        logger.trace("Evicting supported currencies cache");
     }
 
     /**
      * Empties the cache for currency rates on a scheduled interval defined in the application properties file.
      */
     @Scheduled(fixedRateString = "${currency_rates_api.currency_rates.cache_ttl}")
+    @CacheEvict(value = "currencyRates", allEntries = true)
     void evictCurrencyRatesCache() {
-        logger.debug("Evicting currency rates cache");
+        logger.trace("Evicting currency rates cache");
     }
 
     @SuppressWarnings("unused")

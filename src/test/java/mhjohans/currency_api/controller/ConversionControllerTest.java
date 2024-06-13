@@ -30,8 +30,7 @@ public class ConversionControllerTest {
     private CurrencyRateService currencyRateService;
 
     @BeforeEach
-    public void setUp() {
-        // Initialize the mock objects
+    void setUp() {
         // Mock the supported currencies to include USD and EUR
         List<String> supportedCurrencies = List.of("USD", "EUR");
         when(currencyRateService.getSupportedCurrencies()).thenReturn(supportedCurrencies);
