@@ -16,11 +16,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestClientException;
 
+import mhjohans.currency_api.configuration.TestWebSecurityConfiguration;
 import mhjohans.currency_api.service.ConversionService;
 import mhjohans.currency_api.service.CurrencyRateService;
 
 @WebMvcTest(ConversionController.class)
-@Import(ConversionService.class)
+@Import({ ConversionService.class, TestWebSecurityConfiguration.class })
 public class ConversionControllerTest {
 
     @Autowired

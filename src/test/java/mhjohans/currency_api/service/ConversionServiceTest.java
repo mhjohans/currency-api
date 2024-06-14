@@ -18,7 +18,7 @@ public class ConversionServiceTest {
 
     @Mock
     private CurrencyRateService currencyRateService;
-    
+
     @InjectMocks
     private ConversionService conversionService;
 
@@ -42,7 +42,7 @@ public class ConversionServiceTest {
         // Verify the format of the conversion result
         assertEquals("€85.00", result);
     }
-    
+
     @Test
     void testConvertCurrencyWithFinnishLocale() {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("fi"));
@@ -87,5 +87,5 @@ public class ConversionServiceTest {
         });
         assertEquals("Currency code not supported: GBP", exception.getMessage());
     }
-    
+
 }

@@ -32,11 +32,14 @@ public class CurrencyRateService {
     private List<String> fallbackSupportedCurrencies;
 
     @Cacheable("supportedCurrencies")
-    // TODO: Having fallback values means that the values won't be updated until the cache expires even if the API starts working.
+    // TODO: Having fallback values means that the values won't be updated until the
+    // cache expires even if the API starts working.
     @Retry(name = "supportedCurrenciesRetry", fallbackMethod = "getSupportedCurrenciesFallback")
     public List<String> getSupportedCurrencies() {
         logger.debug("Getting supported currencies from API");
-        List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies").retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
+        List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies").retrieve()
+                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {
+                });
         logger.trace("Got supported currencies from API: {}", supportedCurrencies);
         Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
         return supportedCurrencies.stream().map(CurrencyDTO::code).toList();
@@ -46,14 +49,17 @@ public class CurrencyRateService {
     @Retry(name = "currencyRateRetry")
     public double getCurrencyRate(String fromCurrencyCode, String toCurrencyCode) {
         logger.debug("Getting currency rate from API for {} to {}", fromCurrencyCode, toCurrencyCode);
-        CurrencyRateDTO currencyRate = currencyRateApiClient.get().uri("/rates/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRateDTO.class);
-        logger.trace("Got currency rate from API for {} to {} with value {}: {}", fromCurrencyCode, toCurrencyCode, currencyRate, currencyRate);
+        CurrencyRateDTO currencyRate = currencyRateApiClient.get()
+                .uri("/rates/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRateDTO.class);
+        logger.trace("Got currency rate from API for {} to {} with value {}: {}", fromCurrencyCode, toCurrencyCode,
+                currencyRate, currencyRate);
         Objects.requireNonNull(currencyRate, "Currency rate cannot be null");
         return currencyRate.quote();
     }
- 
+
     /**
-     * Empties the cache for supported currencies on a scheduled interval defined in the application properties file.
+     * Empties the cache for supported currencies on a scheduled interval defined in
+     * the application properties file.
      */
     @Scheduled(fixedRateString = "${currency_rates_api.supported_currencies.cache_ttl}")
     @CacheEvict(value = "supportedCurrencies", allEntries = true)
@@ -62,7 +68,8 @@ public class CurrencyRateService {
     }
 
     /**
-     * Empties the cache for currency rates on a scheduled interval defined in the application properties file.
+     * Empties the cache for currency rates on a scheduled interval defined in the
+     * application properties file.
      */
     @Scheduled(fixedRateString = "${currency_rates_api.currency_rates.cache_ttl}")
     @CacheEvict(value = "currencyRates", allEntries = true)
@@ -72,7 +79,8 @@ public class CurrencyRateService {
 
     @SuppressWarnings("unused")
     private List<String> getSupportedCurrenciesFallback(Exception e) {
-        logger.warn("Could not retrieve supported currencies, using fallback values: {}", fallbackSupportedCurrencies, e);
+        logger.warn("Could not retrieve supported currencies, using fallback values: {}", fallbackSupportedCurrencies,
+                e);
         return fallbackSupportedCurrencies;
     }
 

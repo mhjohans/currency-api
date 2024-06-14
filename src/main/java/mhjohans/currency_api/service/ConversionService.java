@@ -21,7 +21,7 @@ public class ConversionService {
         double convertedAmount = currencyRateService.getCurrencyRate(fromCurrencyCode, toCurrencyCode) * amount;
         return formatCurrencyAmount(convertedAmount, toCurrencyCode);
     }
-    
+
     private void validateCurrencyCode(String currencyCode) {
         // Check if the currency code is null
         if (currencyCode == null) {
@@ -31,7 +31,8 @@ public class ConversionService {
         String cleanedCurrencyCode = currencyCode.trim().toUpperCase();
         // Check if the currency code has correct length
         if (cleanedCurrencyCode.length() != 3) {
-            throw new IllegalArgumentException("Invalid currency code: " + (currencyCode.isEmpty() ? "string cannot be empty" : currencyCode));
+            throw new IllegalArgumentException(
+                    "Invalid currency code: " + (currencyCode.isEmpty() ? "string cannot be empty" : currencyCode));
         }
         // Check if the currency code is not on the list of supported currencies
         List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
@@ -42,10 +43,12 @@ public class ConversionService {
 
     private String formatCurrencyAmount(double amount, String currencyCode) {
         Currency currency = Currency.getInstance(currencyCode);
-        // Formats the amount as a localized currency string based on the 'Accept-Language' header in the request or the default runtime locale if header is not present
+        // Formats the amount as a localized currency string based on the
+        // 'Accept-Language' header in the request or the default runtime locale if
+        // header is not present
         NumberFormat numberFormat = NumberFormat.getCurrencyInstance(LocaleContextHolder.getLocale());
         numberFormat.setCurrency(currency);
         return numberFormat.format(amount);
     }
-    
+
 }

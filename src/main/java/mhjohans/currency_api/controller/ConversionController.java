@@ -31,6 +31,7 @@ public class ConversionController {
     public String convertCurrency(@RequestParam String from, @RequestParam String to, @RequestParam double amount) {
         // TODO: Add authentication
         // TODO: Add CSRF and CSP for security
+        // TODO: Add code injection protection
         try {
             return currencyApiService.convertCurrency(from, to, amount);
         } catch (IllegalArgumentException e) {

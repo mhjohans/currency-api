@@ -13,20 +13,23 @@ public class ResilienceConfiguration {
 
     @Bean
     CircuitBreakerConfigCustomizer circuitBreakerConfigCustomizer() {
-        return CircuitBreakerConfigCustomizer.of("currencyRateServiceCircuitBreaker", builder -> builder.failureRateThreshold(60)
-            .slidingWindowSize(5)
-            .waitDurationInOpenState(Duration.ofSeconds(30))
-            .permittedNumberOfCallsInHalfOpenState(2));
+        return CircuitBreakerConfigCustomizer.of("currencyRateServiceCircuitBreaker",
+                builder -> builder.failureRateThreshold(60)
+                        .slidingWindowSize(5)
+                        .waitDurationInOpenState(Duration.ofSeconds(30))
+                        .permittedNumberOfCallsInHalfOpenState(2));
     }
-    
+
     @Bean
     RetryConfigCustomizer supportedCurrenciesRetryConfigCustomizer() {
-        return RetryConfigCustomizer.of("supportedCurrenciesRetry", builder -> builder.maxAttempts(5).waitDuration(Duration.ofMillis(500)));
+        return RetryConfigCustomizer.of("supportedCurrenciesRetry",
+                builder -> builder.maxAttempts(5).waitDuration(Duration.ofMillis(500)));
     }
 
     @Bean
     RetryConfigCustomizer currencyRateRetryConfigCustomizer() {
-        return RetryConfigCustomizer.of("currencyRateRetry", builder -> builder.maxAttempts(3).waitDuration(Duration.ofMillis(300)));
+        return RetryConfigCustomizer.of("currencyRateRetry",
+                builder -> builder.maxAttempts(3).waitDuration(Duration.ofMillis(300)));
     }
 
 }
