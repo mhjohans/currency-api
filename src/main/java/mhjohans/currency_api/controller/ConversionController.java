@@ -20,18 +20,21 @@ public class ConversionController {
     private ConversionService currencyApiService;
 
     /**
-     * HTTP GET endpoint that converts the given decimal amount from one currency to another.
+     * HTTP GET endpoint that converts the given decimal amount from one currency to
+     * another.
      *
-     * @param  from    the currency code to convert from as a string
-     * @param  to      the currency code to convert to as a string
-     * @param  amount  the amount to convert as a double
-     * @return         the converted amount as a string
+     * @param from   the currency code to convert from as a string
+     * @param to     the currency code to convert to as a string
+     * @param amount the amount to convert as a double
+     * @return the converted amount as a string
      */
     @GetMapping("/convert")
     public String convertCurrency(@RequestParam String from, @RequestParam String to, @RequestParam double amount) {
         // TODO: Add authentication
         // TODO: Add CSRF and CSP for security
         // TODO: Add code injection protection
+        // No HTTP caching is required, instead always return the latest data and use
+        // the internal cache if available
         try {
             return currencyApiService.convertCurrency(from, to, amount);
         } catch (IllegalArgumentException e) {
