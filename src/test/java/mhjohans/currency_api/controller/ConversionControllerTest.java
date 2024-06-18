@@ -41,34 +41,39 @@ public class ConversionControllerTest {
 
     @Test
     void testConvert() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/currency-api/convert?from=USD&to=EUR&amount=100"))
+        mockMvc.perform(MockMvcRequestBuilders.get(generateRequestUrl("USD", "EUR", 100)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("€85.00"));
     }
 
     @Test
     void testConvertWithEmptyCurrency() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/currency-api/convert?from=&to=EUR&amount=100"))
+        mockMvc.perform(MockMvcRequestBuilders.get(generateRequestUrl("", "EUR", 100)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testConvertWithEmptyAmount() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/currency-api/convert?from=USD&to=EUR&amount="))
+        mockMvc.perform(MockMvcRequestBuilders.get("/currency-api/convert?source=USD&target=EUR&value="))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testConvertWithUnsupportedCurrency() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/currency-api/convert?from=USD&to=GBP&amount=100"))
+        mockMvc.perform(MockMvcRequestBuilders.get(generateRequestUrl("USD", "GBP", 100)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void testConvertWithUnavailableExternalApi() throws Exception {
         when(currencyRateService.getCurrencyRate("USD", "EUR")).thenThrow(new RestClientException("N/A"));
-        mockMvc.perform(MockMvcRequestBuilders.get("/currency-api/convert?from=USD&to=EUR&amount=100"))
+        mockMvc.perform(MockMvcRequestBuilders.get(generateRequestUrl("USD", "EUR", 100)))
                 .andExpect(status().isInternalServerError());
+    }
+
+    private String generateRequestUrl(String sourceCurrency, String targetCurrency, double value) {
+        return String.format("/currency-api/convert?source=%s&target=%s&value=%s", sourceCurrency, targetCurrency,
+                value);
     }
 
 }

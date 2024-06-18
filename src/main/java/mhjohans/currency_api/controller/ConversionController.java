@@ -23,20 +23,21 @@ public class ConversionController {
      * HTTP GET endpoint that converts the given decimal amount from one currency to
      * another.
      *
-     * @param from   the currency code to convert from as a string
-     * @param to     the currency code to convert to as a string
-     * @param amount the amount to convert as a double
+     * @param source the currency code to convert from as a string
+     * @param target the currency code to convert to as a string
+     * @param value  the amount to convert as a double
      * @return the converted amount as a string
      */
     @GetMapping("/convert")
-    public String convertCurrency(@RequestParam String from, @RequestParam String to, @RequestParam double amount) {
+    public String convertCurrency(@RequestParam String source, @RequestParam String target,
+            @RequestParam double value) {
         // TODO: Add authentication
         // TODO: Add CSRF and CSP for security
         // TODO: Add code injection protection
         // No HTTP caching is required, instead always return the latest data and use
         // the internal cache if available
         try {
-            return currencyApiService.convertCurrency(from, to, amount);
+            return currencyApiService.convertCurrency(source, target, value);
         } catch (IllegalArgumentException e) {
             // Received invalid request parameters
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
