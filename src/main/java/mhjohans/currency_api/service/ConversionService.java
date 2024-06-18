@@ -33,7 +33,7 @@ public class ConversionService {
         if (cleanedCurrencyCode.length() != 3) {
             throw new IllegalArgumentException(
                     "Invalid currency code: "
-                            + (currencyCode.isEmpty() ? "Currency code cannot be empty" : currencyCode));
+                            + (currencyCode.isEmpty() ? "currency code cannot be empty" : currencyCode));
         }
         // Check if the currency code is not on the list of supported currencies
         List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();

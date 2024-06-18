@@ -47,12 +47,13 @@ public class CurrencyRateService {
 
     @Cacheable(value = "currencyRates", sync = true)
     @Retry(name = "currencyRateRetry")
-    public double getCurrencyRate(String fromCurrencyCode, String toCurrencyCode) {
-        logger.debug("Getting currency rate from API for {} to {}", fromCurrencyCode, toCurrencyCode);
+    public double getCurrencyRate(String sourceCurrencyCode, String targetCurrencyCode) {
+        logger.debug("Getting currency rate from API: source currency {}, target currency {}", sourceCurrencyCode,
+                targetCurrencyCode);
         CurrencyRateDTO currencyRate = currencyRateApiClient.get()
-                .uri("/rates/{from}/{to}", fromCurrencyCode, toCurrencyCode).retrieve().body(CurrencyRateDTO.class);
-        logger.trace("Got currency rate from API for {} to {} with value {}: {}", fromCurrencyCode, toCurrencyCode,
-                currencyRate, currencyRate);
+                .uri("/rates/{from}/{to}", sourceCurrencyCode, targetCurrencyCode).retrieve()
+                .body(CurrencyRateDTO.class);
+        logger.trace("Got currency rate from API: {}", currencyRate);
         Objects.requireNonNull(currencyRate, "Currency rate cannot be null");
         return currencyRate.quote();
     }

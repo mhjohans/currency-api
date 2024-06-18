@@ -5,10 +5,6 @@ target/
 !**/src/test/**/target/
 
 # Maven wrapper
-/.mvn
-!/.mvn/maven-wrapper.jar
-/.mvn/wrapper/maven-wrapper.properties
-/mvnw
 /mvnw.cmd
 
 # STS

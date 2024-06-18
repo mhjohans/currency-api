@@ -77,7 +77,7 @@ public class ConversionServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             conversionService.convertCurrency("", "EUR", 100);
         });
-        assertEquals("Invalid currency code: string cannot be empty", exception.getMessage());
+        assertEquals("Invalid currency code: currency code cannot be empty", exception.getMessage());
     }
 
     @Test

@@ -4,7 +4,7 @@ spring:
     name: currency-api
 logging:
   level:
-    mhjohans.currency_api.service: TRACE
+    mhjohans.currency_api.service: DEBUG
 # Security parameters
 security:
   api_key: 46f4a918-fe60-4564-80a3-fd59caa9816b
