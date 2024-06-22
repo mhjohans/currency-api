@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +28,9 @@ public class WebSecurityConfiguration {
                                                 sessionManagementConfigurer -> sessionManagementConfigurer
                                                                 .sessionCreationPolicy(
                                                                                 SessionCreationPolicy.STATELESS))
-                                .addFilterBefore(new ApiKeyAuthenticationFilter(requiredApiKey),
+                                .addFilterBefore(
+                                                new ApiKeyAuthenticationFilter(requiredApiKey,
+                                                                AnyRequestMatcher.INSTANCE),
                                                 UsernamePasswordAuthenticationFilter.class)
                                 // Enable CSRF protection
                                 .csrf(csrfConfigurer -> csrfConfigurer.csrfTokenRepository(
