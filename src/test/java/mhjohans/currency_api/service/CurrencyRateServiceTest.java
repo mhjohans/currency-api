@@ -1,15 +1,14 @@
 package mhjohans.currency_api.service;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,7 +19,7 @@ import mhjohans.currency_api.dtos.CurrencyDTO;
 import mhjohans.currency_api.dtos.CurrencyRateDTO;
 
 @SpringBootTest
-public class CurrencyRateServiceTest {
+class CurrencyRateServiceTest {
 
     @Autowired
     private CurrencyRateService currencyRateService;
@@ -34,15 +33,16 @@ public class CurrencyRateServiceTest {
         currencyRateService.evictCurrencyRatesCache();
         currencyRateService.evictSupportedCurrenciesCache();
         // Mock the supported currencies to include USD and EUR
-        List<CurrencyDTO> supportedCurrencies = List.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true),
-                new CurrencyDTO("EUR", "12345", 2, "Euro", true));
+        List<CurrencyDTO> supportedCurrencies =
+                List.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true),
+                        new CurrencyDTO("EUR", "12345", 2, "Euro", true));
         when(currencyRateApiClient.get().uri("/currencies").retrieve()
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {
-                })).thenReturn(supportedCurrencies);
+                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {}))
+                        .thenReturn(supportedCurrencies);
         // Mock the currency rate from USD to EUR
         CurrencyRateDTO currencyRateDTO = new CurrencyRateDTO("USD", "EUR", 0.85, LocalDate.now());
-        when(currencyRateApiClient.get().uri("/rates/{from}/{to}", "USD", "EUR").retrieve().body(CurrencyRateDTO.class))
-                .thenReturn(currencyRateDTO);
+        when(currencyRateApiClient.get().uri("/rates/{from}/{to}", "USD", "EUR").retrieve()
+                .body(CurrencyRateDTO.class)).thenReturn(currencyRateDTO);
     }
 
     @Test
@@ -52,8 +52,7 @@ public class CurrencyRateServiceTest {
             currencyRateService.getSupportedCurrencies();
         }
         verify(currencyRateApiClient.get().uri("/currencies").retrieve(), times(1))
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {
-                });
+                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
     }
 
     @Test
@@ -61,8 +60,8 @@ public class CurrencyRateServiceTest {
         for (int i = 0; i < 3; i++) {
             currencyRateService.getCurrencyRate("USD", "EUR");
         }
-        verify(currencyRateApiClient.get().uri("/rates/{from}/{to}", "USD", "EUR").retrieve(), times(1))
-                .body(CurrencyRateDTO.class);
+        verify(currencyRateApiClient.get().uri("/rates/{from}/{to}", "USD", "EUR").retrieve(),
+                times(1)).body(CurrencyRateDTO.class);
     }
 
     // TODO: Add resilience tests

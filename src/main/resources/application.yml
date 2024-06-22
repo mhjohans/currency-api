@@ -9,7 +9,6 @@ logging:
 security:
   api_key: 46f4a918-fe60-4564-80a3-fd59caa9816b
 # Currency rates API parameters
-# TODO: Define this as a ConfigurationProperties object
 currency_rates_api:
   key: ${SWOP_API_KEY}
   base_url: https://swop.cx/rest

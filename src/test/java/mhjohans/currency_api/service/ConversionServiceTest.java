@@ -1,20 +1,19 @@
 package mhjohans.currency_api.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
 import java.util.List;
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-public class ConversionServiceTest {
+class ConversionServiceTest {
 
     @Mock
     private CurrencyRateService currencyRateService;
@@ -77,7 +76,8 @@ public class ConversionServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             conversionService.convertCurrency("", "EUR", 100);
         });
-        assertEquals("Invalid currency code: currency code cannot be empty", exception.getMessage());
+        assertEquals("Invalid currency code: currency code cannot be empty",
+                exception.getMessage());
     }
 
     @Test

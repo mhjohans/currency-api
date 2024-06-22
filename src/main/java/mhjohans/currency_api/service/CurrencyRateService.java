@@ -37,9 +37,8 @@ public class CurrencyRateService {
     @Retry(name = "supportedCurrenciesRetry", fallbackMethod = "getSupportedCurrenciesFallback")
     public List<String> getSupportedCurrencies() {
         logger.debug("Getting supported currencies from API");
-        List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies").retrieve()
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {
-                });
+        List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies")
+                .retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
         logger.trace("Got supported currencies from API: {}", supportedCurrencies);
         Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
         return supportedCurrencies.stream().map(CurrencyDTO::code).toList();
@@ -48,8 +47,8 @@ public class CurrencyRateService {
     @Cacheable(value = "currencyRates", sync = true)
     @Retry(name = "currencyRateRetry")
     public double getCurrencyRate(String sourceCurrencyCode, String targetCurrencyCode) {
-        logger.debug("Getting currency rate from API: source currency {}, target currency {}", sourceCurrencyCode,
-                targetCurrencyCode);
+        logger.debug("Getting currency rate from API: source currency {}, target currency {}",
+                sourceCurrencyCode, targetCurrencyCode);
         CurrencyRateDTO currencyRate = currencyRateApiClient.get()
                 .uri("/rates/{from}/{to}", sourceCurrencyCode, targetCurrencyCode).retrieve()
                 .body(CurrencyRateDTO.class);
@@ -80,8 +79,8 @@ public class CurrencyRateService {
 
     @SuppressWarnings("unused")
     private List<String> getSupportedCurrenciesFallback(Exception e) {
-        logger.warn("Could not retrieve supported currencies, using fallback values: {}", fallbackSupportedCurrencies,
-                e);
+        logger.warn("Could not retrieve supported currencies, using fallback values: {}",
+                fallbackSupportedCurrencies, e);
         return fallbackSupportedCurrencies;
     }
 
