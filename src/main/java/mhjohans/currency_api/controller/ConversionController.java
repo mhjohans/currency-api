@@ -1,5 +1,7 @@
 package mhjohans.currency_api.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +20,12 @@ import mhjohans.currency_api.services.ConversionService;
 @RequestMapping("/${spring.application.name}")
 public class ConversionController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConversionController.class);
+
     private static final String CONVERT_TIMER_NAME = "controller.convert.timer";
 
     private static final String CONVERT_FAIL_COUNTER_NAME = "controller.convert.fail.counter";
+
 
     private final ConversionService conversionService;
 
@@ -53,16 +58,23 @@ public class ConversionController {
     @Counted(value = CONVERT_FAIL_COUNTER_NAME, recordFailuresOnly = true)
     public String convertCurrency(@RequestParam String source, @RequestParam String target,
             @RequestParam double value) {
-        // TODO: Add logging
         try {
-            return conversionService.convertCurrency(source, target, value);
+            logger.debug("Received request for conversion from {} to {} with value {}", source,
+                    target, value);
+            String result = conversionService.convertCurrency(source, target, value);
+            logger.debug("Finished response for conversion request, result: {}", result);
+            return result;
         } catch (IllegalArgumentException e) {
             // Received invalid request parameters
+            logger.debug("Received invalid request parameters: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (RestClientException e) {
             // Could not get a valid response from the external currency rate API
+            logger.warn("Could not get a valid response from the external currency rate API: {}",
+                    e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
+
 
 }

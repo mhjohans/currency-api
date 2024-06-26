@@ -21,13 +21,10 @@ public class WebSecurityConfiguration {
 
         /**
          * Configures the security settings for the application's REST API.
-         * <ul>
-         * <li>API key authentication is enabled for all requests.
-         * <li>CSRF protection is enabled, but not active because is is only used when an method that
-         * can alter the state is called, such as POST.</li>
-         * <li>CSP protection is enabled to allow only the same origin for all resources.
-         * </ul>
-         *
+         * - API key authentication is enabled for all requests.
+         * - CSRF protection is enabled, but not active because is is only used when an method that
+         * can alter the state is called, such as POST.
+         * - CSP protection is enabled to allow only the same origin for all resources.
          */
         @Bean
         SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -4,7 +4,7 @@ spring:
     name: currency-api
 logging:
   level:
-    mhjohans.currency_api.service: DEBUG
+    mhjohans.currency_api.service: TRACE
 
 # Observability parameters
 management:

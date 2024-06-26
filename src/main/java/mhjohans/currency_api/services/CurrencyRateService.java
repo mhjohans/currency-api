@@ -37,16 +37,21 @@ public class CurrencyRateService {
      * 
      * See {@link mhjohans.currency_api.configurations.ResilienceConfiguration} for the resilience configuration.
      *
-     * @return  a list of currency codes representing the supported currencies
+     * @return  a list of currency code strings representing the supported currencies
      */
     @Cacheable("supportedCurrencies")
     @Retry(name = "supportedCurrenciesRetry")
     public List<String> getSupportedCurrencies() {
-        logger.debug("Getting supported currencies from API");
+        logger.debug("Getting supported currencies from external API");
         List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies")
                 .retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
-        logger.trace("Got supported currencies from API: {}", supportedCurrencies);
         Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
+        if (logger.isTraceEnabled()) {
+            logger.trace("Got supported currencies from external API: {}", supportedCurrencies);
+        } else {
+            logger.debug("Got {} supported currencies from external API",
+                    supportedCurrencies.size());
+        }
         return supportedCurrencies.stream().map(CurrencyDTO::code).toList();
     }
 
@@ -67,12 +72,13 @@ public class CurrencyRateService {
     @Cacheable(value = "currencyRates", sync = true)
     @Retry(name = "currencyRateRetry")
     public double getCurrencyRate(String sourceCurrencyCode, String targetCurrencyCode) {
-        logger.debug("Getting currency rate from API: source currency {}, target currency {}",
+        logger.debug(
+                "Getting currency rate from external API: source currency {}, target currency {}",
                 sourceCurrencyCode, targetCurrencyCode);
         CurrencyRateDTO currencyRate = currencyRateApiClient.get()
                 .uri("/rates/{from}/{to}", sourceCurrencyCode, targetCurrencyCode).retrieve()
                 .body(CurrencyRateDTO.class);
-        logger.trace("Got currency rate from API: {}", currencyRate);
+        logger.debug("Got currency rate from external API: {}", currencyRate);
         Objects.requireNonNull(currencyRate, "Currency rate cannot be null");
         return currencyRate.quote();
     }

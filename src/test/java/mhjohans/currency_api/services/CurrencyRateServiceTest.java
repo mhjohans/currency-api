@@ -64,6 +64,4 @@ class CurrencyRateServiceTest {
 
     // TODO: Add resilience tests
 
-    // TODO: Add fallback tests
-
 }
