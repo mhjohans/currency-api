@@ -37,6 +37,5 @@ currency-rates-api:
   # Cache expiry parameters
   supported-currencies:
     cache-ttl: P1D # 1 day
-    fallback:  USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY
   currency-rates:
     cache-ttl: PT1M # 1 minute
