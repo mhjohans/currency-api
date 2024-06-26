@@ -8,6 +8,10 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class RestClientConfiguration {
 
+    /**
+     * Creates a REST client with the provided base URL, API key and API key authentication header used in the 
+     * external currency rates API.
+     */
     @Bean
     RestClient restClient(@Value("${currency-rates-api.base-url}") String baseUrl,
             @Value("${currency-rates-api.key}") String apiKey,

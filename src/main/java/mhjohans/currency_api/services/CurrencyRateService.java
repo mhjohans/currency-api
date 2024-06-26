@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -24,17 +23,24 @@ public class CurrencyRateService {
 
     private final RestClient currencyRateApiClient;
 
-    @Value("${currency-rates-api.supported-currencies.fallback}")
-    private List<String> fallbackSupportedCurrencies;
-
     CurrencyRateService(RestClient currencyRateApiClient) {
         this.currencyRateApiClient = currencyRateApiClient;
     }
 
+    /**
+     * Retrieves the list of supported currencies from the external API.
+     * <ul>
+     * <li>Result is cached to improve performance on repeat calls.
+     * <li>A retry policy is used to retry the API call if it fails.
+     * <li>A circuit breaker is used to stop the API call if it fails too many times.
+     * </ul>
+     * 
+     * See {@link mhjohans.currency_api.configurations.ResilienceConfiguration} for the resilience configuration.
+     *
+     * @return  a list of currency codes representing the supported currencies
+     */
     @Cacheable("supportedCurrencies")
-    // TODO: Having fallback values means that the values won't be updated until the
-    // cache expires even if the API starts working.
-    @Retry(name = "supportedCurrenciesRetry", fallbackMethod = "getSupportedCurrenciesFallback")
+    @Retry(name = "supportedCurrenciesRetry")
     public List<String> getSupportedCurrencies() {
         logger.debug("Getting supported currencies from API");
         List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies")
@@ -44,6 +50,20 @@ public class CurrencyRateService {
         return supportedCurrencies.stream().map(CurrencyDTO::code).toList();
     }
 
+    /**
+     * Retrieves the currency rate from the external API based on the source and target currency codes.
+     * <ul>
+     * <li>Result is cached to improve performance on repeat calls.
+     * <li>A retry policy is used to retry the API call if it fails.
+     * <li>A circuit breaker is used to stop the API call if it fails too many times.
+     * </ul>
+     * 
+     * See {@link mhjohans.currency_api.configurations.ResilienceConfiguration} for the resilience configuration.
+     *
+     * @param sourceCurrencyCode the code of the source currency
+     * @param targetCurrencyCode the code of the target currency
+     * @return the currency rate as a double
+     */
     @Cacheable(value = "currencyRates", sync = true)
     @Retry(name = "currencyRateRetry")
     public double getCurrencyRate(String sourceCurrencyCode, String targetCurrencyCode) {
@@ -75,13 +95,6 @@ public class CurrencyRateService {
     @CacheEvict(value = "currencyRates", allEntries = true)
     void evictCurrencyRatesCache() {
         logger.trace("Evicting currency rates cache");
-    }
-
-    @SuppressWarnings("unused")
-    private List<String> getSupportedCurrenciesFallback(Exception e) {
-        logger.warn("Could not retrieve supported currencies, using fallback values: {}",
-                fallbackSupportedCurrencies, e);
-        return fallbackSupportedCurrencies;
     }
 
 }

@@ -9,6 +9,9 @@ import io.github.resilience4j.common.retry.configuration.RetryConfigCustomizer;
 @Configuration
 public class ResilienceConfiguration {
 
+    /**
+     * Configures the circuit breaker for all calls in the currency rate service.
+     */
     @Bean
     CircuitBreakerConfigCustomizer circuitBreakerConfigCustomizer() {
         return CircuitBreakerConfigCustomizer.of("currencyRateServiceCircuitBreaker",
@@ -17,12 +20,18 @@ public class ResilienceConfiguration {
                         .permittedNumberOfCallsInHalfOpenState(2));
     }
 
+    /**
+     * Configures the retry policy for retrieving the list of supported currencies in the currency rate service.
+     */
     @Bean
     RetryConfigCustomizer supportedCurrenciesRetryConfigCustomizer() {
         return RetryConfigCustomizer.of("supportedCurrenciesRetry",
                 builder -> builder.maxAttempts(5).waitDuration(Duration.ofMillis(500)));
     }
 
+    /**
+     * Configures the retry policy for retrieving the currency rate in the currency rate service.
+     */
     @Bean
     RetryConfigCustomizer currencyRateRetryConfigCustomizer() {
         return RetryConfigCustomizer.of("currencyRateRetry",

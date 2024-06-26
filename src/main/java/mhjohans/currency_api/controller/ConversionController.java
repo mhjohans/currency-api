@@ -26,7 +26,10 @@ public class ConversionController {
 
     ConversionController(ConversionService conversionService, MeterRegistry meterRegistry) {
         this.conversionService = conversionService;
-        // Initialize metrics
+        initMetrics(meterRegistry);
+    }
+
+    private void initMetrics(MeterRegistry meterRegistry) {
         Timer.builder(CONVERT_TIMER_NAME).description("Time taken with a call to convert endpoint")
                 .publishPercentiles(0.5, 0.75, 0.95, 0.99).tag("endpoint", "convert")
                 .register(meterRegistry);
@@ -37,7 +40,8 @@ public class ConversionController {
 
     /**
      * HTTP GET endpoint that converts the given decimal amount from one currency to
-     * another.
+     * another. Client-side HTTP caching is disabled, instead always return the latest data and use
+     * the internal cache if available.
      *
      * @param source the currency code to convert from as a string
      * @param target the currency code to convert to as a string
@@ -50,9 +54,6 @@ public class ConversionController {
     public String convertCurrency(@RequestParam String source, @RequestParam String target,
             @RequestParam double value) {
         // TODO: Add logging
-        // TODO: Add code injection protection
-        // No HTTP caching is required, instead always return the latest data and use
-        // the internal cache if available
         try {
             return conversionService.convertCurrency(source, target, value);
         } catch (IllegalArgumentException e) {

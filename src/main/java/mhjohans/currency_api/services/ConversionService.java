@@ -7,7 +7,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-// TODO: Add logging
 public class ConversionService {
 
     private final CurrencyRateService currencyRateService;
@@ -16,6 +15,14 @@ public class ConversionService {
         this.currencyRateService = currencyRateService;
     }
 
+    /**
+     * Converts a given value from one currency to another.
+     *
+     * @param sourceCurrencyCode the currency code to convert from as a string
+     * @param targetCurrencyCode the currency code to convert to as a string
+     * @param value the amount to convert as a double
+     * @return the converted value as a string
+     */
     public String convertCurrency(String sourceCurrencyCode, String targetCurrencyCode,
             double value) {
         validateCurrencyCode(sourceCurrencyCode);
@@ -46,9 +53,8 @@ public class ConversionService {
 
     private String formatCurrencyValue(double value, String currencyCode) {
         Currency currency = Currency.getInstance(currencyCode);
-        // Formats the amount as a localized currency string based on the
-        // 'Accept-Language' header in the request or the default runtime locale if
-        // header is not present
+        // Formats the amount as a localized currency string based on the 'Accept-Language' header in the 
+        // request or the default runtime locale if header is not present
         NumberFormat numberFormat =
                 NumberFormat.getCurrencyInstance(LocaleContextHolder.getLocale());
         numberFormat.setCurrency(currency);
