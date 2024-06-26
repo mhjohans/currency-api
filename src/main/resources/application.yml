@@ -25,12 +25,6 @@ management:
           bucket: metrics
           token: ${INFLUX_TOKEN}
           uri: http://${INFLUX_HOST}:8086
-observability:
-  metrics:
-    controller-convert-timer:
-      name: controller.convert.timer
-    controller-convert-counter:
-      name: controller.convert.counter
 
 # Security parameters
 security:

@@ -1,10 +1,8 @@
 package mhjohans.currency_api.configuration;
 
 import java.time.Duration;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import io.github.resilience4j.common.circuitbreaker.configuration.CircuitBreakerConfigCustomizer;
 import io.github.resilience4j.common.retry.configuration.RetryConfigCustomizer;
 
@@ -14,8 +12,7 @@ public class ResilienceConfiguration {
     @Bean
     CircuitBreakerConfigCustomizer circuitBreakerConfigCustomizer() {
         return CircuitBreakerConfigCustomizer.of("currencyRateServiceCircuitBreaker",
-                builder -> builder.failureRateThreshold(60)
-                        .slidingWindowSize(5)
+                builder -> builder.failureRateThreshold(60).slidingWindowSize(5)
                         .waitDurationInOpenState(Duration.ofSeconds(30))
                         .permittedNumberOfCallsInHalfOpenState(2));
     }
