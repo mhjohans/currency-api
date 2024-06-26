@@ -12,7 +12,7 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import mhjohans.currency_api.service.ConversionService;
+import mhjohans.currency_api.services.ConversionService;
 
 @RestController
 @RequestMapping("/${spring.application.name}")
@@ -26,6 +26,7 @@ public class ConversionController {
 
     ConversionController(ConversionService conversionService, MeterRegistry meterRegistry) {
         this.conversionService = conversionService;
+        // Initialize metrics
         Timer.builder(CONVERT_TIMER_NAME).description("Time taken with a call to convert endpoint")
                 .publishPercentiles(0.5, 0.75, 0.95, 0.99).tag("endpoint", "convert")
                 .register(meterRegistry);

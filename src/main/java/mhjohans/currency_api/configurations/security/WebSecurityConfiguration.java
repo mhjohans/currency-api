@@ -1,4 +1,4 @@
-package mhjohans.currency_api.configuration.security;
+package mhjohans.currency_api.configurations.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

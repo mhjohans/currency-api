@@ -1,4 +1,4 @@
-package mhjohans.currency_api.configuration;
+package mhjohans.currency_api.configurations;
 
 import java.time.Duration;
 import org.springframework.context.annotation.Bean;

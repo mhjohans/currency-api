@@ -1,4 +1,4 @@
-package mhjohans.currency_api.service;
+package mhjohans.currency_api.services;
 
 import java.text.NumberFormat;
 import java.util.Currency;

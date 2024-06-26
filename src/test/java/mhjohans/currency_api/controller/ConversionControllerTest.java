@@ -1,14 +1,15 @@
 package mhjohans.currency_api.controller;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,15 +20,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.web.client.RestClientException;
-
-import mhjohans.currency_api.service.ConversionService;
-import mhjohans.currency_api.service.CurrencyRateService;
+import mhjohans.currency_api.configurations.ConversionControllerTestConfiguration;
+import mhjohans.currency_api.services.ConversionService;
+import mhjohans.currency_api.services.CurrencyRateService;
 
 @WebMvcTest(ConversionController.class)
-@Import({ConversionService.class})
+@Import({ConversionService.class, ConversionControllerTestConfiguration.class})
 @WithMockUser
 class ConversionControllerTest {
 

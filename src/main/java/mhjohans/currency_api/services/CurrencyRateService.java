@@ -1,4 +1,4 @@
-package mhjohans.currency_api.service;
+package mhjohans.currency_api.services;
 
 import java.util.List;
 import java.util.Objects;

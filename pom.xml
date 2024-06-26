@@ -21,6 +21,9 @@
 	<profiles>
 		<profile>
 			<id>development</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<dependencies>
 				<!-- Dependencies for development profile -->
 				<dependency>
