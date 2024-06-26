@@ -1,0 +1,36 @@
+services:
+  currency-api:
+    image: currency-api
+    depends_on:
+      - influxdb  # Ensure the application starts after InfluxDB
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SWOP_API_KEY=${SWOP_API_KEY}
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
+      - INFLUX_HOST=influxdb
+    ports:
+      - 8080:8080  # Expose port 8080 for the application
+
+  influxdb:
+    image: influxdb:2
+    restart: unless-stopped
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword
+      - DOCKER_INFLUXDB_INIT_ORG=currency-api
+      - DOCKER_INFLUXDB_INIT_BUCKET=metrics
+      - DOCKER_INFLUXDB_INIT_RETENTION=1d
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN}
+    ports:
+      - 8086:8086  # Expose port 8086 for InfluxDB
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    restart: unless-stopped
+    depends_on:
+      - influxdb  # Ensure Grafana starts after InfluxDB
+    ports:
+      - 3000:3000  # Expose port 3000 for Grafana

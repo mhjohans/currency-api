@@ -16,7 +16,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 
-        @Value("${security.api_key}")
+        @Value("${security.api-key}")
         private String requiredApiKey;
 
         @Bean

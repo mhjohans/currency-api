@@ -3,8 +3,6 @@ package mhjohans.currency_api.service;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +10,11 @@ import org.springframework.stereotype.Service;
 // TODO: Add logging
 public class ConversionService {
 
-    @Autowired
-    private CurrencyRateService currencyRateService;
+    private final CurrencyRateService currencyRateService;
+
+    ConversionService(CurrencyRateService currencyRateService) {
+        this.currencyRateService = currencyRateService;
+    }
 
     public String convertCurrency(String sourceCurrencyCode, String targetCurrencyCode,
             double value) {

@@ -2,10 +2,8 @@ package mhjohans.currency_api.service;
 
 import java.util.List;
 import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,7 +11,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import mhjohans.currency_api.dtos.CurrencyDTO;
@@ -25,11 +22,14 @@ public class CurrencyRateService {
 
     private static final Logger logger = LoggerFactory.getLogger(CurrencyRateService.class);
 
-    @Autowired
-    private RestClient currencyRateApiClient;
+    private final RestClient currencyRateApiClient;
 
-    @Value("${currency_rates_api.supported_currencies.fallback}")
+    @Value("${currency-rates-api.supported-currencies.fallback}")
     private List<String> fallbackSupportedCurrencies;
+
+    CurrencyRateService(RestClient currencyRateApiClient) {
+        this.currencyRateApiClient = currencyRateApiClient;
+    }
 
     @Cacheable("supportedCurrencies")
     // TODO: Having fallback values means that the values won't be updated until the
@@ -61,7 +61,7 @@ public class CurrencyRateService {
      * Empties the cache for supported currencies on a scheduled interval defined in
      * the application properties file.
      */
-    @Scheduled(fixedRateString = "${currency_rates_api.supported_currencies.cache_ttl}")
+    @Scheduled(fixedRateString = "${currency-rates-api.supported-currencies.cache-ttl}")
     @CacheEvict(value = "supportedCurrencies", allEntries = true)
     void evictSupportedCurrenciesCache() {
         logger.trace("Evicting supported currencies cache");
@@ -71,7 +71,7 @@ public class CurrencyRateService {
      * Empties the cache for currency rates on a scheduled interval defined in the
      * application properties file.
      */
-    @Scheduled(fixedRateString = "${currency_rates_api.currency_rates.cache_ttl}")
+    @Scheduled(fixedRateString = "${currency-rates-api.currency-rates.cache-ttl}")
     @CacheEvict(value = "currencyRates", allEntries = true)
     void evictCurrencyRatesCache() {
         logger.trace("Evicting currency rates cache");

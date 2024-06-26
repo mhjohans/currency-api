@@ -9,9 +9,11 @@ import org.springframework.web.client.RestClient;
 public class RestClientConfiguration {
 
     @Bean
-    RestClient restClient(@Value("${currency_rates_api.base_url}") String baseUrl,
-            @Value("${currency_rates_api.key}") String apiKey, RestClient.Builder restClientBuilder) {
-        return restClientBuilder.baseUrl(baseUrl).defaultHeader("Authorization", "ApiKey " + apiKey).build();
+    RestClient restClient(@Value("${currency-rates-api.base-url}") String baseUrl,
+            @Value("${currency-rates-api.key}") String apiKey,
+            RestClient.Builder restClientBuilder) {
+        return restClientBuilder.baseUrl(baseUrl).defaultHeader("Authorization", "ApiKey " + apiKey)
+                .build();
     }
 
 }

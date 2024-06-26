@@ -5,16 +5,44 @@ spring:
 logging:
   level:
     mhjohans.currency_api.service: DEBUG
+
+# Observability parameters
+management:
+  observations:
+    annotations:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    env:
+      show-values: WHEN_AUTHORIZED
+  influx:
+    metrics:
+      export:
+          org: ${spring.application.name}
+          bucket: metrics
+          token: ${INFLUX_TOKEN}
+          uri: http://${INFLUX_HOST}:8086
+observability:
+  metrics:
+    controller-convert-timer:
+      name: controller.convert.timer
+    controller-convert-counter:
+      name: controller.convert.counter
+
 # Security parameters
 security:
-  api_key: 46f4a918-fe60-4564-80a3-fd59caa9816b
-# Currency rates API parameters
-currency_rates_api:
+  api-key: 46f4a918-fe60-4564-80a3-fd59caa9816b
+
+# External currency rates API parameters
+currency-rates-api:
   key: ${SWOP_API_KEY}
-  base_url: https://swop.cx/rest
+  base-url: https://swop.cx/rest
   # Cache expiry parameters
-  supported_currencies:
-    cache_ttl: P1D # 1 day
+  supported-currencies:
+    cache-ttl: P1D # 1 day
     fallback:  USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY
-  currency_rates:
-    cache_ttl: PT1M # 1 minute
+  currency-rates:
+    cache-ttl: PT1M # 1 minute

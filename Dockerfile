@@ -1,8 +1,11 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:21-jdk
+# Use Eclipse Temurin JDK as parent image
+FROM eclipse-temurin:21
+
+# Listen on port 8080
+EXPOSE 8080
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /opt/app
 
 # Copy the Maven wrapper and POM file
 COPY .mvn/ .mvn
@@ -15,4 +18,4 @@ RUN ./mvnw dependency:go-offline
 COPY src ./src
 
 # Compile and run the application
-ENTRYPOINT ["./mvnw", "spring-boot:run"]
+ENTRYPOINT ["./mvnw", "spring-boot:run", "-Pdocker"]
