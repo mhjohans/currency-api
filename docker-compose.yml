@@ -30,7 +30,13 @@ services:
   grafana:
     image: grafana/grafana:11.0.0
     restart: unless-stopped
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
     depends_on:
-      - influxdb  # Ensure Grafana starts after InfluxDB
+      - currency-api  # Ensure Grafana starts after the application
     ports:
       - 3000:3000  # Expose port 3000 for Grafana
+    volumes: # Mount the Grafana dashboards and datasources
+      - ./src/main/resources/grafana/:/etc/grafana/provisioning/
