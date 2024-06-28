@@ -19,7 +19,6 @@
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "id": 2,
     "links": [],
     "panels": [
         {
@@ -291,6 +290,68 @@
             ],
             "title": "Convert call response time (1m)",
             "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P5697886F9CA74929"
+            },
+            "description": "Length of time the service has been running. ",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    },
+                    "unit": "ms"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 8
+            },
+            "id": 4,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": "",
+                    "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+            },
+            "pluginVersion": "11.0.0",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P5697886F9CA74929"
+                    },
+                    "query": "from(bucket:\"metrics\")\r\n  |> range(start: -1h)\r\n  |> filter(fn: (r) => r._measurement == \"process_uptime\" and r._field == \"value\")\r\n  |> yield()",
+                    "refId": "A"
+                }
+            ],
+            "title": "Service uptime",
+            "type": "stat"
         }
     ],
     "schemaVersion": 39,
@@ -305,8 +366,8 @@
     "timeRangeUpdatedDuringEditOrView": false,
     "timepicker": {},
     "timezone": "browser",
-    "title": "Currency API",
+    "title": "Currency API Monitoring Dashboard",
     "uid": "fdq0ca6au1jpcd",
-    "version": 4,
+    "version": 1,
     "weekStart": ""
 }

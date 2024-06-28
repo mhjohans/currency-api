@@ -43,7 +43,7 @@ docker-compose up -d
 
 ## Using the application
 
-After the build and start-up process from the previous section is finished, the application endpoint is available at <http://localhost:8080/currency-api/convert> as defined in the [Available functions](#available-functions) section. Grafana monitoring tool for observing the application is also available at <http://localhost:3000/> with a ready-made dashboard available in the `Dashboards` section.
+After the build and start-up process from the previous section is finished, the application endpoint is available at <http://localhost:8080/currency-api/convert> as defined in the [Available functions](#available-functions) section. Grafana monitoring tool for observing the application is also available at <http://localhost:3000/> with a ready-made dashboard named `Currency API Monitoring Dashboard`. The dashboard is available in the `Dashboards` section in the Grafana UI.
 
 To convert a value from one currency to another (example: 100 EUR to USD), you can use the following HTTP GET request:
 
