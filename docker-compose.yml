@@ -7,9 +7,9 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      - CURRENCY_API_KEY=${CURRENCY_API_KEY}
       - SWOP_API_KEY=${SWOP_API_KEY}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
-      - INFLUX_HOST=influxdb
     ports:
       - 8080:8080  # Expose port 8080 for the application
 

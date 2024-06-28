@@ -24,11 +24,11 @@ management:
           org: ${spring.application.name}
           bucket: metrics
           token: ${INFLUX_TOKEN}
-          uri: http://${INFLUX_HOST}:8086
+          uri: http://influxdb:8086
 
 # Security parameters
 security:
-  api-key: 46f4a918-fe60-4564-80a3-fd59caa9816b
+  api-key: ${CURRENCY_API_KEY}
 
 # External currency rates API parameters
 currency-rates-api:

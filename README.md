@@ -17,18 +17,46 @@ This application is a Spring Boot based RESTful API for currency conversions.
 
 > **Note:** As a prerequisite, make sure that Docker is properly installed and running.
 
-To build the application image with Docker, go to the project root directory and run the following command:
+For running the application, you will require a personal API key for the [SWOP](https://swop.cx) foreign exchange rate API, which is utilized by the application. When you have the API key, you can then proceed to run the image with Docker by passing the API key as an environment variable to the Docker container.
+
+To build and run the application and its monitoring dependencies with Docker, go to the project root directory and run the following command:
 
 ```bash
-docker build -t currency-api .
+docker-compose up -d -e "CURRENCY_API_KEY=${YOUR_CURRENCY_API_KEY}" -e "SWOP_API_KEY=${YOUR_SWOP_API_KEY}" -e "INFLUX_TOKEN=${YOUR_INFLUX_TOKEN}"
 ```
 
-For running the application, you will require a personal API key for the [SWOP](https://swop.cx) foreign exchange rate API, which is utilized by the application.
+In the command you must replace the placeholder ${YOUR_SWOP_API_KEY} with your own SWOP API key retrieved from the service. Also, you must define values for the environment variables CURRENCY_API_KEY and INFLUX_TOKEN, which are used by the application for authentication of received requests to the REST API and for securing the connection to the InfluxDB database used by the application, respectively.
 
-When you have the API key, you can then proceed to run the image as a container. To do this, you will pass the API key as an environment variable by replacing the placeholder ${YOUR_SWOP_API_KEY} with your own API key in the following command:
+Alternatively, you can create a new file named `.env` in the root of the project and define the environment variables inside the file as shown below:
 
 ```bash
-docker run --name currency-api -it -p 8080:8080 -e "SWOP_API_KEY=${YOUR_SWOP_API_KEY}" currency-api
+CURRENCY_API_KEY=${YOUR_CURRENCY_API_KEY}
+INFLUX_TOKEN=${YOUR_INFLUX_TOKEN}
+SWOP_API_KEY=${YOUR_SWOP_API_KEY}
 ```
 
-You can then access the application endpoint at <http://localhost:8080/currency-api/>.
+And then run the following command:
+
+```bash
+docker-compose up -d
+```
+
+## Using the application
+
+After the build and start-up process from the previous section is finished, the application endpoint is available at <http://localhost:8080/currency-api/convert> as defined in the [Available functions](#available-functions) section. Grafana monitoring tool for observing the application is also available at <http://localhost:3000/> with a ready-made dashboard available in the `Dashboards` section.
+
+To convert a value from one currency to another (example: 100 EUR to USD), you can use the following HTTP GET request:
+
+```bash
+http://localhost:8080/currency-api/convert?source=EUR&target=USD&value=100
+```
+
+The response will contain the converted value as a localized currency string (example output: `$107.01`).
+
+All requests to the endpoint must be authenticated with an API key. The required API key is defined in the environment variable CURRENCY_API_KEY. The authentication is provided by including the header `X-API-KEY` in the request with the value `${YOUR_CURRENCY_API_KEY}`.
+
+An example using `curl` is as follows:
+
+```bash
+curl -G -d "source=EUR" -d "target=USD" -d "value=100" http://localhost:8080/currency-api/convert -H "X-API-KEY: ${YOUR_CURRENCY_API_KEY}"
+```
