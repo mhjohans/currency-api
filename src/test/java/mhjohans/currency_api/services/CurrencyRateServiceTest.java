@@ -3,8 +3,10 @@ package mhjohans.currency_api.services;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.time.LocalDate;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -13,10 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
+
 import mhjohans.currency_api.dtos.CurrencyDTO;
 import mhjohans.currency_api.dtos.CurrencyRateDTO;
 
-@SpringBootTest
+@SpringBootTest(properties = { "CURRENCY_API_KEY=d4e5f6a7-b8c9-4d0e-8f1a-2b3c4d5e6f7a" })
 class CurrencyRateServiceTest {
 
     @Autowired
@@ -31,12 +34,12 @@ class CurrencyRateServiceTest {
         currencyRateService.evictCurrencyRatesCache();
         currencyRateService.evictSupportedCurrenciesCache();
         // Mock the supported currencies to include USD and EUR
-        List<CurrencyDTO> supportedCurrencies =
-                List.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true),
-                        new CurrencyDTO("EUR", "12345", 2, "Euro", true));
+        List<CurrencyDTO> supportedCurrencies = List.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true),
+                new CurrencyDTO("EUR", "12345", 2, "Euro", true));
         when(currencyRateApiClient.get().uri("/currencies").retrieve()
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {}))
-                        .thenReturn(supportedCurrencies);
+                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {
+                }))
+                .thenReturn(supportedCurrencies);
         // Mock the currency rate from USD to EUR
         CurrencyRateDTO currencyRateDTO = new CurrencyRateDTO("USD", "EUR", 0.85, LocalDate.now());
         when(currencyRateApiClient.get().uri("/rates/{from}/{to}", "USD", "EUR").retrieve()
@@ -50,7 +53,8 @@ class CurrencyRateServiceTest {
             currencyRateService.getSupportedCurrencies();
         }
         verify(currencyRateApiClient.get().uri("/currencies").retrieve(), times(1))
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
+                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {
+                });
     }
 
     @Test
