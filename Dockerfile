@@ -11,11 +11,14 @@ WORKDIR /opt/app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
-# Install the dependencies
+# Ensure that the Maven wrapper script has proper line endings
+RUN sed -i 's/\r$//' mvnw
+
+# Install the dependencies with Maven
 RUN ./mvnw dependency:go-offline
 
 # Copy the source code
 COPY src ./src
 
-# Compile and run the application
+# Compile and run the application with Maven
 ENTRYPOINT ["./mvnw", "spring-boot:run", "-Pdocker"]
