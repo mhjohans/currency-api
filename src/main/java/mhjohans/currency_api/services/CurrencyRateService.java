@@ -21,10 +21,10 @@ public class CurrencyRateService {
 
     private static final Logger logger = LoggerFactory.getLogger(CurrencyRateService.class);
 
-    private final RestClient currencyRateApiClient;
+    private final RestClient restClient;
 
-    CurrencyRateService(RestClient currencyRateApiClient) {
-        this.currencyRateApiClient = currencyRateApiClient;
+    CurrencyRateService(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     /**
@@ -43,8 +43,8 @@ public class CurrencyRateService {
     @Retry(name = "supportedCurrenciesRetry")
     public List<String> getSupportedCurrencies() {
         logger.debug("Getting supported currencies from external API");
-        List<CurrencyDTO> supportedCurrencies = currencyRateApiClient.get().uri("/currencies")
-                .retrieve().body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
+        List<CurrencyDTO> supportedCurrencies = restClient.get().uri("/currencies").retrieve()
+                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
         Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
         if (logger.isTraceEnabled()) {
             logger.trace("Got supported currencies from external API: {}", supportedCurrencies);
@@ -65,19 +65,19 @@ public class CurrencyRateService {
      * 
      * See {@link mhjohans.currency_api.configurations.ResilienceConfiguration} for the resilience configuration.
      *
-     * @param sourceCurrencyCode the code of the source currency
-     * @param targetCurrencyCode the code of the target currency
+     * @param sourceCurrency the code of the source currency
+     * @param targetCurrency the code of the target currency
      * @return the currency rate as a double
      */
     @Cacheable(value = "currencyRates", sync = true)
     @Retry(name = "currencyRateRetry")
-    public double getCurrencyRate(String sourceCurrencyCode, String targetCurrencyCode) {
+    public double getCurrencyRate(String sourceCurrency, String targetCurrency) {
         logger.debug(
                 "Getting currency rate from external API: source currency {}, target currency {}",
-                sourceCurrencyCode, targetCurrencyCode);
-        CurrencyRateDTO currencyRate = currencyRateApiClient.get()
-                .uri("/rates/{from}/{to}", sourceCurrencyCode, targetCurrencyCode).retrieve()
-                .body(CurrencyRateDTO.class);
+                sourceCurrency, targetCurrency);
+        CurrencyRateDTO currencyRate =
+                restClient.get().uri("/rates/{from}/{to}", sourceCurrency, targetCurrency)
+                        .retrieve().body(CurrencyRateDTO.class);
         logger.debug("Got currency rate from external API: {}", currencyRate);
         Objects.requireNonNull(currencyRate, "Currency rate cannot be null");
         return currencyRate.quote();

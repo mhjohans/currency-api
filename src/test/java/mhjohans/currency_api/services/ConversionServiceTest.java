@@ -36,7 +36,7 @@ class ConversionServiceTest {
     @Test
     void testConvertCurrency() {
         // Perform the conversion
-        String result = conversionService.convertCurrency("USD", "EUR", 100);
+        String result = conversionService.convert("USD", "EUR", 100);
         // Verify the format of the conversion result
         assertEquals("€85.00", result);
     }
@@ -44,19 +44,19 @@ class ConversionServiceTest {
     @Test
     void testConvertCurrencyWithFinnishLocale() {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("fi"));
-        String result = conversionService.convertCurrency("USD", "EUR", 100);
+        String result = conversionService.convert("USD", "EUR", 100);
         assertEquals("85,00 €", result);
     }
 
     @Test
     void testConvertCurrencyWithZeroAmount() {
-        String result = conversionService.convertCurrency("USD", "EUR", 0);
+        String result = conversionService.convert("USD", "EUR", 0);
         assertEquals("€0.00", result);
     }
 
     @Test
     void testConvertCurrencyWithNegativeAmount() {
-        String result = conversionService.convertCurrency("USD", "EUR", -100);
+        String result = conversionService.convert("USD", "EUR", -100);
         assertEquals("-€85.00", result);
     }
 
@@ -64,7 +64,7 @@ class ConversionServiceTest {
     void testConvertCurrencyWithNullCurrency() {
         // Expect an exception for null currency
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            conversionService.convertCurrency(null, "EUR", 100);
+            conversionService.convert(null, "EUR", 100);
         });
         // Verify the exception message
         assertEquals("Currency code cannot be null", exception.getMessage());
@@ -73,7 +73,7 @@ class ConversionServiceTest {
     @Test
     void testConvertCurrencyWithEmptyCurrency() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            conversionService.convertCurrency("", "EUR", 100);
+            conversionService.convert("", "EUR", 100);
         });
         assertEquals("Invalid currency code: currency code cannot be empty",
                 exception.getMessage());
@@ -82,7 +82,7 @@ class ConversionServiceTest {
     @Test
     void testConvertCurrencyWithUnsupportedCurrency() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            conversionService.convertCurrency("USD", "GBP", 100);
+            conversionService.convert("USD", "GBP", 100);
         });
         assertEquals("Currency code not supported: GBP", exception.getMessage());
     }

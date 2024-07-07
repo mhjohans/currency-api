@@ -22,48 +22,47 @@ public class ConversionService {
     /**
      * Converts a given value from one currency to another.
      *
-     * @param sourceCurrencyCode the currency code to convert from as a string
-     * @param targetCurrencyCode the currency code to convert to as a string
+     * @param sourceCurrency the currency code to convert from as a string
+     * @param targetCurrency the currency code to convert to as a string
      * @param value the amount to convert as a double
      * @return the converted value as a string
      */
-    public String convertCurrency(String sourceCurrencyCode, String targetCurrencyCode,
-            double value) {
-        logger.debug("Converting {} {} to {}...", value, sourceCurrencyCode, targetCurrencyCode);
-        validateCurrencyCode(sourceCurrencyCode);
-        validateCurrencyCode(targetCurrencyCode);
+    public String convert(String sourceCurrency, String targetCurrency, double value) {
+        logger.debug("Converting {} {} to {}...", value, sourceCurrency, targetCurrency);
+        validate(sourceCurrency);
+        validate(targetCurrency);
         double convertedValue =
-                currencyRateService.getCurrencyRate(sourceCurrencyCode, targetCurrencyCode) * value;
-        logger.debug("Converted {} {} to {}.", value, sourceCurrencyCode, convertedValue);
-        return formatCurrencyValue(convertedValue, targetCurrencyCode);
+                currencyRateService.getCurrencyRate(sourceCurrency, targetCurrency) * value;
+        logger.debug("Converted {} {} to {}.", value, sourceCurrency, convertedValue);
+        return localize(convertedValue, targetCurrency);
     }
 
-    private void validateCurrencyCode(String currencyCode) {
-        logger.debug("Validating currency code: {}", currencyCode);
+    private void validate(String currency) {
+        logger.debug("Validating currency code: {}", currency);
         // Check if the currency code is null
-        if (currencyCode == null) {
+        if (currency == null) {
             logger.debug("Currency code is null");
             throw new IllegalArgumentException("Currency code cannot be null");
         }
         // Clean up the received currency code of whitespace and convert to uppercase
-        String cleanedCurrencyCode = currencyCode.trim().toUpperCase();
-        logger.debug("Cleaned up currency code: {}", cleanedCurrencyCode);
+        String cleanedCurrency = currency.trim().toUpperCase();
+        logger.debug("Cleaned up currency code: {}", cleanedCurrency);
         // Check if the currency code has correct length
-        if (cleanedCurrencyCode.length() != 3) {
-            logger.debug("Currency code has incorrect length: {}", cleanedCurrencyCode);
+        if (cleanedCurrency.length() != 3) {
+            logger.debug("Currency code has incorrect length: {}", cleanedCurrency);
             throw new IllegalArgumentException("Invalid currency code: "
-                    + (currencyCode.isEmpty() ? "currency code cannot be empty" : currencyCode));
+                    + (currency.isEmpty() ? "currency code cannot be empty" : currency));
         }
         // Check if the currency code is not on the list of supported currencies
         List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
-        if (!supportedCurrencies.contains(cleanedCurrencyCode)) {
-            logger.debug("Currency code not supported: {}", cleanedCurrencyCode);
-            throw new IllegalArgumentException("Currency code not supported: " + currencyCode);
+        if (!supportedCurrencies.contains(cleanedCurrency)) {
+            logger.debug("Currency code not supported: {}", cleanedCurrency);
+            throw new IllegalArgumentException("Currency code not supported: " + currency);
         }
         logger.debug("Currency code validated successfully");
     }
 
-    private String formatCurrencyValue(double value, String currencyCode) {
+    private static String localize(double value, String currencyCode) {
         Currency currency = Currency.getInstance(currencyCode);
         // Formats the amount as a localized currency string based on the 'Accept-Language' header in the 
         // request or the default runtime locale if header is not present

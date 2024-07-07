@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import jakarta.annotation.PostConstruct;
 import mhjohans.currency_api.services.ConversionService;
 
 @RestController
@@ -22,16 +23,19 @@ public class ConversionController {
 
     private final ConversionService conversionService;
 
+    private final MeterRegistry meterRegistry;
+
     private Timer convertTimer;
 
     private Counter convertFailCounter;
 
     ConversionController(ConversionService conversionService, MeterRegistry meterRegistry) {
         this.conversionService = conversionService;
-        initMetrics(meterRegistry);
+        this.meterRegistry = meterRegistry;
     }
 
-    private void initMetrics(MeterRegistry meterRegistry) {
+    @PostConstruct
+    private void initMetrics() {
         convertTimer = Timer.builder("controller.convert.timer")
                 .description("Time taken with a call to convert endpoint")
                 .publishPercentiles(0.5, 0.75, 0.95, 0.99).tag("endpoint", "convert")
@@ -52,13 +56,13 @@ public class ConversionController {
      * @return the converted amount as a string
      */
     @GetMapping("/convert")
-    public String convertCurrency(@RequestParam String source, @RequestParam String target,
+    public String convert(@RequestParam String source, @RequestParam String target,
             @RequestParam double value) {
         try {
             logger.debug("Received request for conversion from {} to {} with value {}", source,
                     target, value);
             String result = convertTimer
-                    .recordCallable(() -> conversionService.convertCurrency(source, target, value));
+                    .recordCallable(() -> conversionService.convert(source, target, value));
             logger.debug("Finished response for conversion request, result: {}", result);
             return result;
         } catch (Exception e) {
