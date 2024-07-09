@@ -25,7 +25,7 @@ public class ConversionService {
      * @param sourceCurrency the currency code to convert from as a string
      * @param targetCurrency the currency code to convert to as a string
      * @param value the amount to convert as a double
-     * @return the converted value as a string
+     * @return the converted value as a localized currency string
      */
     public String convert(String sourceCurrency, String targetCurrency, double value) {
         logger.debug("Converting {} {} to {}...", value, sourceCurrency, targetCurrency);
