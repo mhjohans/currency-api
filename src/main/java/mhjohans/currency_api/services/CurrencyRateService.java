@@ -33,7 +33,7 @@ public class CurrencyRateService {
     /**
      * Retrieves the list of supported currencies from the external API.
      * <ul>
-     * <li>Result is cached to improve performance on repeat calls.
+     * <li>Result is cached to improve performance on repeat calls. The data is not expected to change frequently so a long TTL is used.
      * <li>A retry policy is used to retry the API call if it fails.
      * <li>A circuit breaker is used to stop the API call if it fails too many times.
      * </ul>

@@ -50,8 +50,9 @@ class ConversionControllerTest {
 
         @Test
         void testConvert() throws Exception {
+                String jsonContent = "{\"status\":\"success\",\"data\":{\"result\":\"€85.00\"}}";
                 performRequest("USD", "EUR", 100).andExpect(status().isOk())
-                                .andExpect(content().string("€85.00"));
+                                .andExpect(content().json(jsonContent));
         }
 
         @ParameterizedTest

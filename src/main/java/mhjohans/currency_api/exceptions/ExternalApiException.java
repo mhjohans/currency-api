@@ -19,11 +19,4 @@ public class ExternalApiException extends Exception {
         return clientResponseException;
     }
 
-    @Override
-    public String getMessage() {
-        return String.format(
-                "Could not get a valid response from external currency rate API:%nResponse [%s]",
-                clientResponseException.getMessage());
-    }
-
 }
