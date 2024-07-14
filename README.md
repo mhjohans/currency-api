@@ -1,6 +1,6 @@
 # Currency Conversion API
 
-This application is a Spring Boot based RESTful API for currency conversions.
+This application is a Spring Boot based RESTful API that can be used to convert currency values from one currency to another using real-time data from the [SWOP](https://swop.cx) foreign exchange rate API.
 
 ## Available functions
 
@@ -13,11 +13,23 @@ This application is a Spring Boot based RESTful API for currency conversions.
 
   > **Note:** Input currency codes must comply with the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code format.
 
+## Features
+
+- Uses real-world and real-time conversion rates from the [SWOP](https://swop.cx) foreign exchange rate API
+- Supports all currencies and conversion pairs that are available from SWOP API
+- Smart caching is used to limit the number and rate of calls made to SWOP API
+- Resilience measures are used to handle communication errors with SWOP API gracefully
+- Authentication is provided by using an API key
+- Security includes CSRF protection and CSP protection
+- Observability is provided by sending metrics to [InfluxDB](https://www.influxdata.com/products/influxdb/) and displaying them in a [Grafana](https://grafana.com/) monitoring dashboard
+- Unit tests for services and controllers with JUnit and Mockito
+- Dockerization of the application and its monitoring dependencies
+
 ## Running the application with Docker
 
 > **Note:** As a prerequisite, make sure that Docker is properly installed and running.
 
-For running the application, you will require a personal API key for the [SWOP](https://swop.cx) foreign exchange rate API, which is utilized by the application. When you have the API key, you can then proceed to run the image with Docker by passing the API key as an environment variable to the Docker container.
+For running the application, you will require a personal API key for the [SWOP](https://swop.cx) foreign exchange rate API, which is utilized by the application. You can get free or paid accounts for accessing the API. When you have the API key associated with your account, you can then proceed to run the image with Docker by passing the API key as an environment variable to the Docker container.
 
 To build and run the application and its monitoring dependencies with Docker, go to the project root directory and run the following command:
 
