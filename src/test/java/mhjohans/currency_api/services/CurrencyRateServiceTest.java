@@ -4,7 +4,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -31,11 +31,11 @@ class CurrencyRateServiceTest {
         currencyRateService.evictCurrencyRatesCache();
         currencyRateService.evictSupportedCurrenciesCache();
         // Mock the supported currencies to include USD and EUR
-        List<CurrencyDTO> supportedCurrencies =
-                List.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true),
+        Set<CurrencyDTO> supportedCurrencies =
+                Set.of(new CurrencyDTO("USD", "12345", 2, "US Dollar", true),
                         new CurrencyDTO("EUR", "12345", 2, "Euro", true));
         when(restClient.get().uri("/currencies").retrieve()
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {}))
+                .body(new ParameterizedTypeReference<Set<CurrencyDTO>>() {}))
                         .thenReturn(supportedCurrencies);
         // Mock the currency rate from USD to EUR
         CurrencyRateDTO currencyRate = new CurrencyRateDTO("USD", "EUR", 0.85, LocalDate.now());
@@ -50,7 +50,7 @@ class CurrencyRateServiceTest {
             currencyRateService.getSupportedCurrencies();
         }
         verify(restClient.get().uri("/currencies").retrieve(), times(1))
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
+                .body(new ParameterizedTypeReference<Set<CurrencyDTO>>() {});
     }
 
     @Test

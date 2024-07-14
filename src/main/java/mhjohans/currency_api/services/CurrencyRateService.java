@@ -1,7 +1,8 @@
 package mhjohans.currency_api.services;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -41,10 +42,10 @@ public class CurrencyRateService {
      */
     @Cacheable("supportedCurrencies")
     @Retry(name = "supportedCurrenciesRetry")
-    public List<String> getSupportedCurrencies() {
+    public Set<String> getSupportedCurrencies() {
         logger.debug("Getting supported currencies from external API");
-        List<CurrencyDTO> supportedCurrencies = restClient.get().uri("/currencies").retrieve()
-                .body(new ParameterizedTypeReference<List<CurrencyDTO>>() {});
+        Set<CurrencyDTO> supportedCurrencies = restClient.get().uri("/currencies").retrieve()
+                .body(new ParameterizedTypeReference<Set<CurrencyDTO>>() {});
         Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
         if (logger.isTraceEnabled()) {
             logger.trace("Got supported currencies from external API: {}", supportedCurrencies);
@@ -52,7 +53,7 @@ public class CurrencyRateService {
             logger.debug("Got {} supported currencies from external API",
                     supportedCurrencies.size());
         }
-        return supportedCurrencies.stream().map(CurrencyDTO::code).toList();
+        return supportedCurrencies.stream().map(CurrencyDTO::code).collect(Collectors.toSet());
     }
 
     /**

@@ -3,8 +3,8 @@ package mhjohans.currency_api.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ class ConversionServiceTest {
         // Initialize the mock objects
         MockitoAnnotations.openMocks(this);
         // Mock the supported currencies to include USD and EUR
-        List<String> supportedCurrencies = List.of("USD", "EUR");
+        Set<String> supportedCurrencies = Set.of("USD", "EUR");
         when(currencyRateService.getSupportedCurrencies()).thenReturn(supportedCurrencies);
         // Mock the currency rate from USD to EUR
         when(currencyRateService.getCurrencyRate("USD", "EUR")).thenReturn(0.85);

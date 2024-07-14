@@ -3,7 +3,7 @@ package mhjohans.currency_api.controller;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class ConversionControllerTest {
         @BeforeEach
         void setUp() {
                 // Mock the supported currencies to include USD and EUR
-                List<String> supportedCurrencies = List.of("USD", "EUR");
+                Set<String> supportedCurrencies = Set.of("USD", "EUR");
                 when(currencyRateService.getSupportedCurrencies()).thenReturn(supportedCurrencies);
                 // Mock the currency rate from USD to EUR
                 when(currencyRateService.getCurrencyRate("USD", "EUR")).thenReturn(0.85);

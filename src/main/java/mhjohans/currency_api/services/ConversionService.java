@@ -2,7 +2,7 @@ package mhjohans.currency_api.services;
 
 import java.text.NumberFormat;
 import java.util.Currency;
-import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -54,7 +54,7 @@ public class ConversionService {
                     + (currency.isEmpty() ? "currency code cannot be empty" : currency));
         }
         // Check if the currency code is not on the list of supported currencies
-        List<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
+        Set<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
         if (!supportedCurrencies.contains(cleanedCurrency)) {
             logger.debug("Currency code not supported: {}", cleanedCurrency);
             throw new IllegalArgumentException("Currency code not supported: " + currency);
