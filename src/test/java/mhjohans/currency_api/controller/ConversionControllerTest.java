@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestClientException;
 import mhjohans.currency_api.configurations.ConversionControllerTestConfiguration;
+import mhjohans.currency_api.exceptions.ExternalApiException;
 import mhjohans.currency_api.services.ConversionService;
 import mhjohans.currency_api.services.CurrencyRateService;
 
@@ -39,7 +40,7 @@ class ConversionControllerTest {
         private CurrencyRateService currencyRateService;
 
         @BeforeEach
-        void setUp() {
+        void setUp() throws ExternalApiException {
                 // Mock the supported currencies to include USD and EUR
                 Set<String> supportedCurrencies = Set.of("USD", "EUR");
                 when(currencyRateService.getSupportedCurrencies()).thenReturn(supportedCurrencies);

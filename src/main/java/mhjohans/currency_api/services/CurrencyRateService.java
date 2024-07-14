@@ -11,10 +11,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import mhjohans.currency_api.dtos.CurrencyDTO;
 import mhjohans.currency_api.dtos.CurrencyRateDTO;
+import mhjohans.currency_api.exceptions.ExternalApiException;
 
 @Service
 @CircuitBreaker(name = "currencyRateServiceCircuitBreaker")
@@ -42,24 +44,31 @@ public class CurrencyRateService {
      */
     @Cacheable("supportedCurrencies")
     @Retry(name = "supportedCurrenciesRetry")
-    public Set<String> getSupportedCurrencies() {
+    public Set<String> getSupportedCurrencies() throws ExternalApiException {
         logger.debug("Getting supported currencies from external API");
-        Set<CurrencyDTO> supportedCurrencies = restClient.get().uri("/currencies").retrieve()
-                .body(new ParameterizedTypeReference<Set<CurrencyDTO>>() {});
-        Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
-        if (logger.isTraceEnabled()) {
-            logger.trace("Got supported currencies from external API: {}", supportedCurrencies);
-        } else {
-            logger.debug("Got {} supported currencies from external API",
-                    supportedCurrencies.size());
+        try {
+            Set<CurrencyDTO> supportedCurrencies = restClient.get().uri("/currencies").retrieve()
+                    .body(new ParameterizedTypeReference<Set<CurrencyDTO>>() {});
+            Objects.requireNonNull(supportedCurrencies, "Supported currencies cannot be null");
+            if (logger.isTraceEnabled()) {
+                logger.trace("Got supported currencies from external API: {}", supportedCurrencies);
+            } else {
+                logger.debug("Got {} supported currencies from external API",
+                        supportedCurrencies.size());
+            }
+            return supportedCurrencies.stream().map(CurrencyDTO::code).collect(Collectors.toSet());
+        } catch (RestClientResponseException e) {
+            logger.warn("Error retrieving supported currencies from external API", e);
+            throw new ExternalApiException("Failed to retrieve supported currencies", e);
         }
-        return supportedCurrencies.stream().map(CurrencyDTO::code).collect(Collectors.toSet());
     }
 
     /**
      * Retrieves the currency rate from the external API based on the source and target currency codes.
      * <ul>
-     * <li>Result is cached to improve performance on repeat calls.
+     * <li>Result is cached to improve performance on repeat calls. Rate of calls to external API is on average limited to the number of 
+     * unique currency rates requested per cache time-to-live, e.g. 6 calls per minute if the cache TTL is 1 minute and 6 different pairs of 
+     * currencies are requested.
      * <li>A retry policy is used to retry the API call if it fails.
      * <li>A circuit breaker is used to stop the API call if it fails too many times.
      * </ul>
@@ -72,16 +81,22 @@ public class CurrencyRateService {
      */
     @Cacheable(value = "currencyRates", sync = true)
     @Retry(name = "currencyRateRetry")
-    public double getCurrencyRate(String sourceCurrency, String targetCurrency) {
+    public double getCurrencyRate(String sourceCurrency, String targetCurrency)
+            throws ExternalApiException {
         logger.debug(
                 "Getting currency rate from external API: source currency {}, target currency {}",
                 sourceCurrency, targetCurrency);
-        CurrencyRateDTO currencyRate =
-                restClient.get().uri("/rates/{from}/{to}", sourceCurrency, targetCurrency)
-                        .retrieve().body(CurrencyRateDTO.class);
-        logger.debug("Got currency rate from external API: {}", currencyRate);
-        Objects.requireNonNull(currencyRate, "Currency rate cannot be null");
-        return currencyRate.quote();
+        try {
+            CurrencyRateDTO currencyRate =
+                    restClient.get().uri("/rates/{from}/{to}", sourceCurrency, targetCurrency)
+                            .retrieve().body(CurrencyRateDTO.class);
+            logger.debug("Got currency rate from external API: {}", currencyRate);
+            Objects.requireNonNull(currencyRate, "Currency rate cannot be null");
+            return currencyRate.quote();
+        } catch (RestClientResponseException e) {
+            logger.warn("Error retrieving currency rate from external API", e);
+            throw new ExternalApiException("Failed to retrieve currency rate", e);
+        }
     }
 
     /**

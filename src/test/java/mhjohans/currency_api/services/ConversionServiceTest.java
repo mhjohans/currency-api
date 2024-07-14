@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.i18n.LocaleContextHolder;
+import mhjohans.currency_api.exceptions.ExternalApiException;
+import mhjohans.currency_api.exceptions.InvalidCurrencyException;
 
 class ConversionServiceTest {
 
@@ -21,7 +23,7 @@ class ConversionServiceTest {
     private ConversionService conversionService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws ExternalApiException {
         // Set the locale for formatting
         LocaleContextHolder.setLocale(Locale.US);
         // Initialize the mock objects
@@ -34,7 +36,7 @@ class ConversionServiceTest {
     }
 
     @Test
-    void testConvertCurrency() {
+    void testConvertCurrency() throws InvalidCurrencyException, ExternalApiException {
         // Perform the conversion
         String result = conversionService.convert("USD", "EUR", 100);
         // Verify the format of the conversion result
@@ -42,20 +44,22 @@ class ConversionServiceTest {
     }
 
     @Test
-    void testConvertCurrencyWithFinnishLocale() {
+    void testConvertCurrencyWithFinnishLocale()
+            throws InvalidCurrencyException, ExternalApiException {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("fi"));
         String result = conversionService.convert("USD", "EUR", 100);
         assertEquals("85,00 €", result);
     }
 
     @Test
-    void testConvertCurrencyWithZeroAmount() {
+    void testConvertCurrencyWithZeroAmount() throws InvalidCurrencyException, ExternalApiException {
         String result = conversionService.convert("USD", "EUR", 0);
         assertEquals("€0.00", result);
     }
 
     @Test
-    void testConvertCurrencyWithNegativeAmount() {
+    void testConvertCurrencyWithNegativeAmount()
+            throws InvalidCurrencyException, ExternalApiException {
         String result = conversionService.convert("USD", "EUR", -100);
         assertEquals("-€85.00", result);
     }
@@ -63,7 +67,7 @@ class ConversionServiceTest {
     @Test
     void testConvertCurrencyWithNullCurrency() {
         // Expect an exception for null currency
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        InvalidCurrencyException exception = assertThrows(InvalidCurrencyException.class, () -> {
             conversionService.convert(null, "EUR", 100);
         });
         // Verify the exception message
@@ -72,7 +76,7 @@ class ConversionServiceTest {
 
     @Test
     void testConvertCurrencyWithEmptyCurrency() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        InvalidCurrencyException exception = assertThrows(InvalidCurrencyException.class, () -> {
             conversionService.convert("", "EUR", 100);
         });
         assertEquals("Invalid currency code: currency code cannot be empty",
@@ -81,7 +85,7 @@ class ConversionServiceTest {
 
     @Test
     void testConvertCurrencyWithUnsupportedCurrency() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        InvalidCurrencyException exception = assertThrows(InvalidCurrencyException.class, () -> {
             conversionService.convert("USD", "GBP", 100);
         });
         assertEquals("Currency code not supported: GBP", exception.getMessage());

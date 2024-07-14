@@ -15,6 +15,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
 import mhjohans.currency_api.dtos.CurrencyDTO;
 import mhjohans.currency_api.dtos.CurrencyRateDTO;
+import mhjohans.currency_api.exceptions.ExternalApiException;
 
 @SpringBootTest(properties = {"CURRENCY_API_KEY=d4e5f6a7-b8c9-4d0e-8f1a-2b3c4d5e6f7a"})
 class CurrencyRateServiceTest {
@@ -44,7 +45,7 @@ class CurrencyRateServiceTest {
     }
 
     @Test
-    void testSupportedCurrenciesCache() {
+    void testSupportedCurrenciesCache() throws ExternalApiException {
         // Call the method 3 times and verify that it only calls the API once
         for (int i = 0; i < 3; i++) {
             currencyRateService.getSupportedCurrencies();
@@ -54,7 +55,7 @@ class CurrencyRateServiceTest {
     }
 
     @Test
-    void testCurrencyRateCache() {
+    void testCurrencyRateCache() throws ExternalApiException {
         for (int i = 0; i < 3; i++) {
             currencyRateService.getCurrencyRate("USD", "EUR");
         }

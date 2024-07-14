@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import mhjohans.currency_api.exceptions.ExternalApiException;
+import mhjohans.currency_api.exceptions.InvalidCurrencyException;
 
 @Service
 public class ConversionService {
@@ -27,7 +29,8 @@ public class ConversionService {
      * @param value the amount to convert as a double
      * @return the converted value as a localized currency string
      */
-    public String convert(String sourceCurrency, String targetCurrency, double value) {
+    public String convert(String sourceCurrency, String targetCurrency, double value)
+            throws InvalidCurrencyException, ExternalApiException {
         logger.debug("Converting {} {} to {}...", value, sourceCurrency, targetCurrency);
         validate(sourceCurrency);
         validate(targetCurrency);
@@ -37,12 +40,12 @@ public class ConversionService {
         return localize(convertedValue, targetCurrency);
     }
 
-    private void validate(String currency) {
+    private void validate(String currency) throws InvalidCurrencyException, ExternalApiException {
         logger.debug("Validating currency code: {}", currency);
         // Check if the currency code is null
         if (currency == null) {
             logger.debug("Currency code is null");
-            throw new IllegalArgumentException("Currency code cannot be null");
+            throw new InvalidCurrencyException("Currency code cannot be null");
         }
         // Clean up the received currency code of whitespace and convert to uppercase
         String cleanedCurrency = currency.trim().toUpperCase();
@@ -50,14 +53,14 @@ public class ConversionService {
         // Check if the currency code has correct length
         if (cleanedCurrency.length() != 3) {
             logger.debug("Currency code has incorrect length: {}", cleanedCurrency);
-            throw new IllegalArgumentException("Invalid currency code: "
+            throw new InvalidCurrencyException("Invalid currency code: "
                     + (currency.isEmpty() ? "currency code cannot be empty" : currency));
         }
         // Check if the currency code is not on the list of supported currencies
         Set<String> supportedCurrencies = currencyRateService.getSupportedCurrencies();
         if (!supportedCurrencies.contains(cleanedCurrency)) {
             logger.debug("Currency code not supported: {}", cleanedCurrency);
-            throw new IllegalArgumentException("Currency code not supported: " + currency);
+            throw new InvalidCurrencyException("Currency code not supported: " + currency);
         }
         logger.debug("Currency code validated successfully");
     }
