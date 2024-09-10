@@ -1,5 +1,6 @@
 package mhjohans.currency_api.services;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Set;
@@ -34,8 +35,9 @@ public class ConversionService {
         logger.debug("Converting {} {} to {}...", value, sourceCurrency, targetCurrency);
         validate(sourceCurrency);
         validate(targetCurrency);
-        double convertedValue =
-                currencyRateService.getCurrencyRate(sourceCurrency, targetCurrency) * value;
+        double rate = currencyRateService.getCurrencyRate(sourceCurrency, targetCurrency);
+        // Use BigDecimal to avoid rounding errors
+        BigDecimal convertedValue = BigDecimal.valueOf(rate).multiply(BigDecimal.valueOf(value));
         logger.debug("Converted {} {} to {}.", value, sourceCurrency, convertedValue);
         return localize(convertedValue, targetCurrency);
     }
@@ -65,7 +67,7 @@ public class ConversionService {
         logger.debug("Currency code validated successfully");
     }
 
-    private static String localize(double value, String currencyCode) {
+    private static String localize(BigDecimal value, String currencyCode) {
         Currency currency = Currency.getInstance(currencyCode);
         // Formats the amount as a localized currency string based on the 'Accept-Language' header in the 
         // request or the default runtime locale if header is not present
