@@ -77,16 +77,8 @@ public class ConversionController {
         return new SuccessResponseDTO<>(result);
     }
 
-    @ExceptionHandler(InvalidCurrencyException.class)
-    ResponseEntity<FailResponseDTO> handleInvalidCurrencyException(InvalidCurrencyException e) {
-        logger.warn("Received invalid currency code request parameter: {}", e.getMessage());
-        convertFailCounter.increment();
-        return getFailResponse(e);
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    ResponseEntity<FailResponseDTO> handleMethodArgumentTypeMismatchException(
-            MethodArgumentTypeMismatchException e) {
+    @ExceptionHandler({InvalidCurrencyException.class, MethodArgumentTypeMismatchException.class})
+    ResponseEntity<FailResponseDTO> handleInvalidRequestParameterException(Exception e) {
         logger.warn("Received invalid request parameter: {}", e.getMessage());
         convertFailCounter.increment();
         return getFailResponse(e);
@@ -100,7 +92,7 @@ public class ConversionController {
         return getErrorResponse(e);
     }
 
-    @ExceptionHandler(Throwable.class)
+    @ExceptionHandler(Exception.class)
     ResponseEntity<ErrorResponseDTO> handleGenericException(Exception e) {
         logger.error("Unexpected error occurred: {}", e.getMessage());
         convertFailCounter.increment();
