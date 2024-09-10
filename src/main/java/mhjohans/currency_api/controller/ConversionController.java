@@ -19,7 +19,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import jakarta.annotation.PostConstruct;
-import mhjohans.currency_api.dtos.ConversionResultDTO;
 import mhjohans.currency_api.dtos.response.ErrorResponseDTO;
 import mhjohans.currency_api.dtos.response.FailResponseDTO;
 import mhjohans.currency_api.dtos.response.SuccessResponseDTO;
@@ -68,14 +67,14 @@ public class ConversionController {
      * @return the converted value as a localized currency string
      */
     @GetMapping(value = "/convert", produces = MediaType.APPLICATION_JSON_VALUE)
-    SuccessResponseDTO<ConversionResultDTO> convert(@RequestParam String source,
-            @RequestParam String target, @RequestParam double value) throws Exception {
+    SuccessResponseDTO<String> convert(@RequestParam String source, @RequestParam String target,
+            @RequestParam double value) throws Exception {
         logger.debug("Received request for conversion from {} to {} with value {}", source, target,
                 value);
         String result =
                 convertTimer.recordCallable(() -> conversionService.convert(source, target, value));
         logger.debug("Finished response for conversion request, result: {}", result);
-        return new SuccessResponseDTO<>(new ConversionResultDTO(result));
+        return new SuccessResponseDTO<>(result);
     }
 
     @ExceptionHandler(InvalidCurrencyException.class)
@@ -109,7 +108,7 @@ public class ConversionController {
     }
 
     /*
-     * Return JSend fromatted error response with status code 400 indicating an invalid request
+     * Return JSend formatted error response with status code 400 indicating an invalid request
      */
     private static ResponseEntity<FailResponseDTO> getFailResponse(Exception e) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
